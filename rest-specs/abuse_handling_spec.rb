@@ -1,7 +1,7 @@
 require_relative './rest_shared_context'
 
 describe "abuse handling" do
-  def create_request(token_repr)
+  def create_request(token_repr, helper = nil) 
     session_id = 'session_id'
     token = Token.first(:token => token_repr)
     request = Request.create
@@ -9,6 +9,7 @@ describe "abuse handling" do
     request.session_id = session_id
     request.token = token
     request.blind = token.user
+    request.helper = helper
     request.answered = false
     request.save!
     request
@@ -52,11 +53,12 @@ describe "abuse handling" do
 
   it "will let user report abuse" do
     register_device
-    user_id = create_user
+    user_id = create_user 'blind'
+    helper_user_id = create_user 'helper'
+    helper = User.first(:_id => helper_user_id)
     token = log_user_in
 
-    #we could add a helper and all to the request, but for this test we don't need it
-    request = create_request token
+    request = create_request token, helper
     report_abuse token, request.id
 
     user = User.first(:id => user_id)
