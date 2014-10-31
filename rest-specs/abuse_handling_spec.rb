@@ -54,14 +54,15 @@ describe "abuse handling" do
   it "will let user report abuse" do
     register_device
     user_id = create_user 'blind'
+    token = log_user_in
+
     helper_user_id = create_user 'helper'
     helper = User.first(:_id => helper_user_id)
-    token = log_user_in
 
     request = create_request token, helper
     report_abuse token, request.id
+    helper.reload
 
-    user = User.first(:id => user_id)
-    expect(user.abuse_reports.count).to eq(1)
+    expect(helper.abuse_reports.count).to eq(1)
   end
 end

@@ -48,6 +48,7 @@ class App < Sinatra::Base
       rescue Exception => e
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
       end
+      TheLogger.log.error user.email
       EventBus.announce(:user_created, user_id: user.id)
       return user_from_id(user._id).to_json
     end
