@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/precise64"
+  config.vm.box = "ubuntu/trusty64"
   config.vm.provision "shell",
       inline: "wget --no-check-certificate https://raw.github.com/bemyeyes/railsready/master/railsready.sh && bash railsready.sh"
 
