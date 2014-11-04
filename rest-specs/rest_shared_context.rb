@@ -53,8 +53,6 @@ shared_context "rest-context" do
   end
 
   def create_user role ="helper", email = @email, password = @password
-    @email = @email + role
-    email = @email
     createUser_url = "#{@servername_with_credentials}/users/"
     response = RestClient.post createUser_url, {'first_name' =>'first_name',
                                                 'last_name'=>'last_name', 'email'=> email,
