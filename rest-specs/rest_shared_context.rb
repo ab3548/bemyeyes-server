@@ -39,8 +39,8 @@ shared_context "rest-context" do
     @security_salt = config["security_salt"]
     @servername = "http://localhost:3001"
     @servername_with_credentials = "http://#{@username}:#{@password}@localhost:3001"
-
     @email =  create_unique_email
+    
     @password = encrypt_password('Password1')
 
     User.destroy_all

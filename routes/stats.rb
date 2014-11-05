@@ -18,6 +18,7 @@ class App < Sinatra::Base
     end
 
     get '/profile/:token_repr' do
+       begin
       token_repr = params[:token_repr]
       helper = helper_from_token token_repr
 
@@ -28,6 +29,9 @@ class App < Sinatra::Base
       next_level = user_level_to_BMELevel helper.user_level.next_user_level
 
       return {'no_helped' => no_helped, 'total_points' => total_points, 'events' => events, 'current_level'=> current_level, 'next_level' => next_level}.to_json
+       rescue => e
+        give_error(400, ERROR_INVALID_BODY, "#{e.message}").to_json
+      end
     end
 
     post '/event' do
