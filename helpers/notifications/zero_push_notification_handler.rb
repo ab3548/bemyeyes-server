@@ -2,15 +2,15 @@ require 'zero_push'
 require_relative './notification_handler'
 
 module ZeroPushIphoneNotifier
-  ZERO_PUSH_FIRST_VERSION = 25
+  ZERO_PUSH_FIRST_VERSION = 33
 
-  def init(zero_push_config, logger)
-    @zero_push_config = zero_push_config
+  def init(zero_push_auth_token, logger)
+    @zero_push_auth_token = zero_push_auth_token
     @logger = logger
   end
 
   def initialize_zero_push
-    ZeroPush.auth_token = @zero_push_config
+    ZeroPush.auth_token = @zero_push_auth_token
     if !ZeroPush.verify_credentials
       raise 'ZERO>PUSH credentials not configured correctly'
     end
@@ -23,16 +23,14 @@ module ZeroPushIphoneNotifier
     notification_args_name = user.to_s
     notification = {
       :device_tokens => device_tokens,
-      :aps => {
         :alert => {
           :"loc-key" => "PUSH_NOTIFICATION_ANSWER_REQUEST_MESSAGE",
           :"loc-args" => [ notification_args_name ],
           :"action-loc-key" => "PUSH_NOTIFICATION_ANSWER_REQUEST_ACTION",
           :short_id => request.short_id,
-        },
+        }, 
         :sound => "call.aiff",
         :badge => 1,
-      }
     }
     # Send notification
     ZeroPush.notify(notification)
@@ -49,9 +47,8 @@ module ZeroPushIphoneNotifier
     notification_args_name = "request cancelled"
     notification = {
       :device_tokens => device_tokens,
-      :aps => {
+     
         :badge => 0,
-      }
     }
     # Send notification
     ZeroPush.notify(notification)
@@ -91,8 +88,8 @@ end
 class ZeroPushIphoneDevelopmentNotifier < NotificationHandler
   include ZeroPushIphoneNotifier
 
-  def initialize(zero_push_config, logger)
-    init zero_push_config, logger
+  def initialize(zero_push_auth_token, logger)
+    init zero_push_auth_token, logger
   end
 
   def include_device? device
