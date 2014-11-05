@@ -9,7 +9,6 @@ class RequestsHelper
     begin
     zero_push_prod_config = zero_push_config['production']['auth_key']
     zero_push_dev_config = zero_push_config['development']['auth_key']
-    TheLogger.log.error "zero_push_dev_config #{zero_push_dev_config}"
 
     #setup the chain to handle notifications
     @iphone_development_notifier = ZeroPushIphoneDevelopmentNotifier.new zero_push_dev_config, logger
