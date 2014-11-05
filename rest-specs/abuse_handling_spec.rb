@@ -56,7 +56,7 @@ describe "abuse handling" do
     user_id = create_user 'blind'
     token = log_user_in
 
-    helper_user_id = create_user 'helper'
+    helper_user_id = create_user 'helper', 'helper@example.com'
     helper = User.first(:_id => helper_user_id)
 
     request = create_request token, helper
