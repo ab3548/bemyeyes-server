@@ -18,6 +18,7 @@ gem 'language_list'
 
 gem 'event_bus'
 gem 'sinatra-jsonp'
+gem 'zero_push'
 group :development do
   gem 'rspec-mocks'
   gem 'factory_girl'

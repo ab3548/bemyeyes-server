@@ -1,4 +1,5 @@
 require_relative  './notification_handler'
+require_relative './zero_push_notification_handler'
 require 'urbanairship'
 
 module IphoneNotifier
@@ -94,7 +95,7 @@ class IphoneProductionNotifier < NotificationHandler
   end
 
   def include_device? device
-    not device.development and device.system_version =~ /iPhone.*/
+    !device.development && device.system_version =~ /iPhone.*/   && device.app_bundle_version < ZeroPushIphoneNotifier::ZERO_PUSH_FIRST_VERSION
   end
 end
 
@@ -106,6 +107,6 @@ class IphoneDevelopmentNotifier < NotificationHandler
   end
 
   def include_device? device
-    device.development and device.system_version =~ /iPhone.*/
+    device.development && device.system_version =~ /iPhone.*/ && device.app_bundle_version < ZeroPushIphoneNotifier::ZERO_PUSH_FIRST_VERSION
   end
 end

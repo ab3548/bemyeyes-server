@@ -6,6 +6,9 @@ RSpec.configure do |config|
 end
 
 describe NotificationHandler do
+
+  ZERO_PUSH_APP_BUNDLE_VERSION = 50
+  URBAN_AIRSHIP_APP_BUNDLE_VERSION = 1
   def setup_logger
     log_instance_double = double('logger instance')
     allow(log_instance_double).to receive(:info)
@@ -22,16 +25,83 @@ describe NotificationHandler do
     Device.destroy_all
   end
 
-  it "filters out development devices" do
-    device = build(:device)
-    device.development = true
-    device.save!
+  describe 'ZeroPushIphoneDevelopmentNotifier' do
+     it "Does not call urban airship devices" do
+      device = build(:device)
+      device.development = true
+      device.app_bundle_version = URBAN_AIRSHIP_APP_BUNDLE_VERSION
+      device.system_version = 'iPhonex'
+      device.save!
 
-    devices = Array.new
-    devices << device
+      devices = Array.new
+      devices << device
 
-    request = build(:request)
-    request.save!
+      request = build(:request)
+      request.save!
+
+      successor_double = double('successor')
+      #should be called since it was not handled by the zero_push notifier
+      expect(successor_double).to receive(:handle_notifications) do |devices, request|
+      end
+
+      logger_double = setup_logger
+      hash = Hash.new
+      sut = IphoneProductionNotifier.new hash, logger_double
+      sut.set_successor successor_double
+      sut.handle_notifications devices, request
+    end
+  end
+
+  describe "IphoneProductionNotifier" do
+    it "Does not call development devices" do
+      device = build(:device)
+      device.development = true
+      device.app_bundle_version = URBAN_AIRSHIP_APP_BUNDLE_VERSION
+      device.system_version = 'iPhonex'
+      device.save!
+
+      devices = Array.new
+      devices << device
+
+      request = build(:request)
+      request.save!
+
+      successor_double = double('successor')
+      #should be called since it was not handled by the production notifier
+      expect(successor_double).to receive(:handle_notifications) do |devices, request|
+      end
+
+      logger_double = setup_logger
+      hash = Hash.new
+      sut = IphoneProductionNotifier.new hash, logger_double
+      sut.set_successor successor_double
+      sut.handle_notifications devices, request
+    end
+
+     it "Does not call zero_push devices" do
+      device = build(:device)
+      device.development = true
+      device.app_bundle_version = ZERO_PUSH_APP_BUNDLE_VERSION
+      device.system_version = 'iPhonex'
+      device.save!
+
+      devices = Array.new
+      devices << device
+
+      request = build(:request)
+      request.save!
+
+      successor_double = double('successor')
+      #should be called since it was not handled by the urban airship production notifier
+      expect(successor_double).to receive(:handle_notifications) do |devices, request|
+      end
+
+      logger_double = setup_logger
+      hash = Hash.new
+      sut = IphoneProductionNotifier.new hash, logger_double
+      sut.set_successor successor_double
+      sut.handle_notifications devices, request
+    end
   end
 
   it "filters out inactive devices" do
@@ -56,4 +126,5 @@ describe NotificationHandler do
     sut.set_successor successor_double
     sut.handle_notifications devices, request
   end
+
 end
