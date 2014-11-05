@@ -93,6 +93,18 @@ class ZeroPushIphoneDevelopmentNotifier < NotificationHandler
   end
 
   def include_device? device
-    ! device.development && device.system_version =~ /iPhone.*/ && device.app_bundle_version >= ZeroPushIphoneNotifier::ZERO_PUSH_FIRST_VERSION
+    device.development && device.system_version =~ /iPhone.*/
+  end
+end
+
+class ZeroPushIphoneProductionNotifier < NotificationHandler
+  include ZeroPushIphoneNotifier
+
+  def initialize(zero_push_auth_token, logger)
+    init zero_push_auth_token, logger
+  end
+
+  def include_device? device
+    ! device.development && device.system_version =~ /iPhone.*/
   end
 end

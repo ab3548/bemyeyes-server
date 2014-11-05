@@ -1,8 +1,9 @@
 require 'event_bus'
+require_relative '../helpers/requests_helper_factory'
+
 class App < Sinatra::Base
     def self.requests_helper
-        ua_config = settings.config['urbanairship']
-        RequestsHelper.new ua_config, TheLogger
+        RequestsHelperFactory.create settings
     end
 
     def self.setup_event_bus

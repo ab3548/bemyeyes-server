@@ -1,4 +1,6 @@
 require_relative '../helpers/requests_helper'
+require_relative '../helpers/requests_helper_factory'
+
 class App < Sinatra::Base
   register Sinatra::Namespace
 
@@ -158,8 +160,7 @@ class App < Sinatra::Base
   end # End namespace /request
 
   def requests_helper
-    ua_config = settings.config['urbanairship']
-    RequestsHelper.new ua_config, TheLogger
+    RequestsHelperFactory.create settings
   end
 
   # Find a request from a short ID
