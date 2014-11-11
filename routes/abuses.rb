@@ -20,21 +20,21 @@ class App < Sinatra::Base
     post '/report' do
       begin
         body_params = JSON.parse(request.body.read)
-        token_repr = body_params["token"]
+        auth_token = body_params["token"]
         request_id = body_params["request_id"]
         reason = body_params["reason"]
-        check_and_raise_if_blank_string token_repr, "token"
+        check_and_raise_if_blank_string auth_token, "token"
         check_and_raise_if_blank_string request_id, "request_id"
         check_and_raise_if_blank_string reason, "reason"
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      if !is_logged_in token_repr
+      if !is_logged_in auth_token
         give_error(401, ERROR_NOT_AUTHORIZED, "Reporter should be logged in").to_json
       end
       begin
-        reporter = get_reporter_role token_repr
+        reporter = get_reporter_role auth_token
         request = Request.first(:id => request_id)
         
         EventBus.announce(:abuse_report_filed, request: request, reporter: reporter, reason:reason)

@@ -59,9 +59,9 @@ class App < Sinatra::Base
       {:status => "OK"}.to_json
     end
 
-    get '/actionable_tasks/:token_repr' do
+    get '/actionable_tasks/:auth_token' do
       begin
-        auth_token = params[:token_repr]
+        auth_token = params[:auth_token]
         helper = helper_from_auth_token auth_token
 
         completed_point_events = get_point_events helper
