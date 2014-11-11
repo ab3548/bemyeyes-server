@@ -1,7 +1,6 @@
 require 'factory_girl'
 require_relative './integration_spec_helper'
 require_relative '../models/device'
-require_relative '../models/token'
 require_relative '../models/user'
 require_relative '../models/blind'
 require_relative '../models/helper'

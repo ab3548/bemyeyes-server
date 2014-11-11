@@ -9,7 +9,16 @@ describe "Helper" do
   end
   before(:each) do
     User.destroy_all
+    Device.destroy_all
     Request.destroy_all
+  end
+
+  def create_device_for_user user
+    device = Device.new
+      device.valid_time = 365.days
+      device.device_token = "device_token_#{(Time.now.to_f*100000).to_s}"
+      user.devices.push(device)
+      device.save!
   end
 
   describe "available" do
@@ -25,9 +34,7 @@ describe "Helper" do
       blind.languages = ['en', 'da']
       blind.save!
 
-      token = Token.new
-      token.valid_time = 365.days
-      helper.tokens.push(token)
+      create_device_for_user helper
 
       expect(helper.available(request).count).to eq(1)
     end
@@ -44,9 +51,7 @@ describe "Helper" do
       blind.languages = ['en', 'da']
       blind.save!
 
-      token = Token.new
-      token.valid_time = 365.days
-      helper.tokens.push(token)
+      create_device_for_user helper
 
       expect(helper.available(request).count).to eq(0)
     end

@@ -8,13 +8,13 @@ class App < Sinatra::Base
       end
     end
 
-    def is_logged_in(token)
-      token = Token.first(:token => token)
-      !token.nil?
+    def is_logged_in(auth_token)
+      device = Device.first(:auth_token => auth_token)
+      !device.nil? && device.is_logged_in
     end
-    def get_reporter_role(token)
-      token = Token.first(:token => token)
-      token.user.role
+    def get_reporter_role(auth_token)
+      device = Device.first(:auth_token => auth_token)
+      device.user.role
     end
 
     post '/report' do

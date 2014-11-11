@@ -5,8 +5,8 @@ describe "Request" do
 
   before(:each) do
     User.destroy_all
-    Token.destroy_all
     Blind.destroy_all
+    Device.destroy_all
     Request.destroy_all
   end
 

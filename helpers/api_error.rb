@@ -1,10 +1,7 @@
 #encoding: utf-8
 # Give an error
 def give_error(status_code, code, message)
-  backtrace=''
-  if !$@.nil?
-    backtrace = $@.join("\n")
-  end
+  backtrace=get_stacktrace
 
   if !$!.nil? and !$!.message.nil?
     message += " " + $!.message
@@ -20,3 +17,13 @@ def create_error_hash(code, message)
              "message" => message
   } }
 end
+
+
+def get_stacktrace
+  backtrace=''
+  if !$@.nil?
+    backtrace = $@.join("\n")
+  end
+  backtrace
+end
+

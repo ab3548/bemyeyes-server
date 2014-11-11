@@ -49,7 +49,6 @@ shared_context "rest-context" do
     HelperRequest.destroy_all
     Request.destroy_all
     ResetPasswordToken.destroy_all
-    Token.destroy_all
   end
 
   def create_user role ="helper", email = @email, password = @password

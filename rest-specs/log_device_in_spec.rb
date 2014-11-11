@@ -5,7 +5,6 @@ require 'bcrypt'
 require 'base64'
 
 require_relative '../app'
-require_relative '../models/token'
 require_relative '../models/device'
 require_relative '../models/user'
 require_relative './rest_shared_context'
@@ -51,12 +50,12 @@ describe "log device in" do
     expect(user.devices.select{|d| d.device_token == token}.length).to be(1)
   end
 
-  it "can log a user in with a device token, token belongs to device" do
+  it "can log a user in with a device token, auth_token assigned to device" do
     create_user
     register_device
     token = log_user_in
-    token = Token.first(:token => token)
-    expect(token.device_id).to_not eq(nil)
+    token = Device.first(:auth_token => token)
+    expect(token).to_not eq(nil)
   end
 
 
@@ -93,6 +92,6 @@ describe "log device in" do
     logoutUser_url  = "#{@servername_with_credentials}/users/logout"
     response = RestClient.put logoutUser_url, {'token'=> token}.to_json
 
-    expect(Token.all(:token => token).count).to eq(0)
+    expect(Device.all(:token => token).count).to eq(0)
   end
 end

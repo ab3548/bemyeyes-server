@@ -56,7 +56,7 @@ class Helper < User
       .all
       .collect(&:helper_id)
 
-      logged_in_users = Token
+      logged_in_users = Device
       .where(:expiry_time.gt => Time.now)
       .fields(:user_id)
       .all

@@ -19,14 +19,13 @@ class App < Sinatra::Base
     # Create new request
     post '/?' do
       begin
-        token_repr = body_params["token"]
-        TheLogger.log.info("request post, token " + token_repr )
+        auth_token = body_params["token"]
+        TheLogger.log.info("request post, token " + auth_token )
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      token = token_from_representation(token_repr)
-      user = token.user
+      user = user_from_auth_token auth_token
 
       begin
         session = OpenTokSDK.create_session :media_mode => :relayed
@@ -61,14 +60,14 @@ class App < Sinatra::Base
     # Answer a request
     put '/:short_id/answer' do
       begin
-        token_repr = body_params["token"]
+        auth_token = body_params["token"]
 
-        TheLogger.log.info("answer request, token  " + token_repr )
+        TheLogger.log.info("answer request, token  " + auth_token )
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      helper = helper_from_token token_repr 
+      helper = helper_from_auth_token auth_token 
       request = request_from_short_id(params[:short_id])
 
       if request.answered?
@@ -87,12 +86,11 @@ class App < Sinatra::Base
     # A helper can cancel his own answer. This should only be done if the session has not already started.
     put '/:short_id/answer/cancel' do
       begin
-        token_repr = body_params["token"]
+        auth_token = body_params["token"]
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
-      token = token_from_representation(token_repr)
-      user = token.user
+      user = user_from_auth_token(auth_token)
       request = request_from_short_id(params[:short_id])
 
       if request.helper.nil?
@@ -112,13 +110,12 @@ class App < Sinatra::Base
     # The blind or a helper can disconnect from a started session thereby stopping the session.
     put '/:short_id/disconnect' do
       begin
-        token_repr = body_params["token"]
+        auth_token = body_params["token"]
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      token = token_from_representation(token_repr)
-      user = token.user
+      user = user_from_auth_token(auth_token)
       request = request_from_short_id(params[:short_id])
 
       if request.stopped?
@@ -136,13 +133,12 @@ class App < Sinatra::Base
     put '/:short_id/rate' do
       begin
         rating = body_params["rating"]
-        token_repr = body_params["token"]
+        try_answer_request_but_already_stopped = body_params["token"]
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      token = token_from_representation(token_repr)
-      user = token.user
+      user = user_from_auth_token(auth_token)
       request = request_from_short_id(params[:short_id])
 
       if request.answered?
