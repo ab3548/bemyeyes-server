@@ -29,7 +29,7 @@ class App < Sinatra::Base
       user = token.user
 
       begin
-        session = OpenTokSDK.create_session :media_mode => :routed
+        session = OpenTokSDK.create_session :media_mode => :relayed
         session_id = session.session_id
         token = OpenTokSDK.generate_token session_id
       rescue Exception => e
