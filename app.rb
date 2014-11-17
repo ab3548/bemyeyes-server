@@ -105,6 +105,7 @@ class App < Sinatra::Base
 
     e = env["sinatra.error"]
     TheLogger.log.error(e)
+    TheLogger.log.error(get_stacktrace)
     return { "result" => "error", "message" => e.message }.to_json
   end
 

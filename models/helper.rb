@@ -55,40 +55,47 @@ class Helper < User
       .fields(:helper_id)
       .all
       .collect(&:helper_id)
+      TheLogger.log.debug "contacted_helpers #{contacted_helpers}"
 
-      logged_in_users = Token
+      logged_in_users = Device
       .where(:expiry_time.gt => Time.now)
       .fields(:user_id)
       .all
       .collect(&:user_id)
+      TheLogger.log.debug "logged_in_users #{logged_in_users}"
 
       abusive_helpers = User
       .where('abuse_reports.blind_id' => request.blind_id)
       .fields(:_id)
       .all
       .collect(&:_id)
+      TheLogger.log.debug "abusive_helpers #{abusive_helpers}"
 
       blocked_users = User
       .where(:blocked => true)
       .fields(:user_id)
       .all
       .collect(&:user_id)
+      TheLogger.log.debug "blocked_users #{blocked_users}"
 
       asleep_users = User.asleep_users
       .where(:role=> 'helper')
       .fields(:user_id)
       .all
       .collect(&:user_id)
+      TheLogger.log.debug "asleep_users #{asleep_users}"
 
       helpers_who_speaks_blind_persons_language = Helper.helpers_who_speaks_blind_persons_language(request)
       .fields(:user_id)
       .all
       .collect(&:user_id)
+      TheLogger.log.debug "helpers_who_speaks_blind_persons_language #{helpers_who_speaks_blind_persons_language}"
 
       helpers_in_a_call = Request.running_requests
       .fields(:helper_id)
       .all
       .collect(&:helper_id)
+      TheLogger.log.debug "helpers_in_a_call #{helpers_in_a_call}"
 
     rescue Exception => e
       TheLogger.log.error e.message

@@ -49,7 +49,6 @@ shared_context "rest-context" do
     HelperRequest.destroy_all
     Request.destroy_all
     ResetPasswordToken.destroy_all
-    Token.destroy_all
   end
 
   def create_user role ="helper", email = @email, password = @password
@@ -82,7 +81,7 @@ shared_context "rest-context" do
 
   def register_device device_token = 'device_token', system_version = 'system_version'
     url = "#{@servername_with_credentials}/devices/register"
-    response = RestClient.post url, {'token' =>'token_repr',
+    response = RestClient.post url, {'token' =>'auth_token',
                                      'device_token'=>device_token, 'device_name'=> 'device_name',
                                      'model'=> 'model', 'system_version' => system_version,
                                      'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',

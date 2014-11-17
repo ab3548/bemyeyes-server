@@ -8,10 +8,10 @@ class App < Sinatra::Base
       return jsonp ({ 'blind' => Blind.count, 'helpers' => Helper.count, 'no_helped' =>Request.count })
     end
 
-    get '/profile/:token_repr' do
+    get '/profile/:auth_token' do
        begin
-      token_repr = params[:token_repr]
-      helper = helper_from_token token_repr
+      auth_token = params[:auth_token]
+      helper = helper_from_auth_token auth_token
 
       no_helped = Request.count(:helper_id => helper._id, :answered => true)
       total_points = helper.points
@@ -27,14 +27,14 @@ class App < Sinatra::Base
 
     post '/event' do
       begin
-      token_repr = body_params['token_repr']
+      auth_token = body_params['token_repr']
       event = body_params['event']
 
       unless HelperPoint.point_type_exists? event.to_s
         give_error(400, ERROR_INVALID_BODY, "Event not found").to_json
       end
 
-      helper = helper_from_token_repr token_repr
+      helper = helper_from_auth_token auth_token
 
       # these events can only be registered once
       if helper.helper_points.any? { | point | point.message == event }
@@ -50,10 +50,10 @@ class App < Sinatra::Base
       {:status => "OK"}.to_json
     end
 
-    get '/actionable_tasks/:token_repr' do
+    get '/actionable_tasks/:auth_token' do
       begin
-        token_repr = params[:token_repr]
-        helper = helper_from_token_repr token_repr
+        auth_token = params[:auth_token]
+        helper = helper_from_auth_token auth_token
 
         completed_point_events = get_point_events helper
         all_point_events = get_points_events_from_hash HelperPoint.actionable_points
@@ -76,11 +76,6 @@ class App < Sinatra::Base
   end
 class BMERemainingTasks< Struct.new(:remaining_tasks, :completed_tasks)
 end
-  def helper_from_token_repr token_repr
-    token = token_from_representation(token_repr)
-    user = token.user
-    helper_from_id user._id
-  end
 
   class BMEPointEvent < Struct.new(:event, :date, :point)
   end

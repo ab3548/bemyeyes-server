@@ -41,7 +41,9 @@ class App < Sinatra::Base
       EventBus.announce(:user_created, user_id: user.id)
       return user_from_id(user._id).to_json
     end
-    
+
+   
+
     # Get user by id
     get '/:user_id' do
       content_type 'application/json'
@@ -90,10 +92,10 @@ class App < Sinatra::Base
       !the_str.nil? and /\d\d:\d\d/.match the_str
     end
 
-    put '/info/:token_repr' do
+    put '/info/:auth_token' do
       begin
-        token = token_from_representation(params[:token_repr])
-        user = token.user
+        device = device_from_auth_token(params[:auth_token])
+        user = device.user
         user.wake_up = body_params['wake_up'] if is_24_hour_string body_params['wake_up']
         user.go_to_sleep = body_params['go_to_sleep'] if is_24_hour_string body_params['go_to_sleep']
         user.utc_offset = body_params['utc_offset'] unless body_params['utc_offset'].nil? or not /-?\d{1,2}/.match body_params['utc_offset']
