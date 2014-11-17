@@ -1,4 +1,5 @@
 require_relative './init'
+require 'timecop'
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
@@ -23,20 +24,22 @@ describe "Helper" do
 
   describe "available" do
     it "can get available helpers with lanugage" do
-      request = build(:request)
+      Timecop.freeze(Time.gm(2014,"jul",9,11,30) ) do
+        request = build(:request)
 
-      helper = request.helper
-      helper.languages = ['ab', 'en']
-      helper.first_name = "non-english"
-      helper.save!
+        helper = request.helper
+        helper.languages = ['ab', 'en']
+        helper.first_name = "non-english"
+        helper.save!
 
-      blind =request.blind
-      blind.languages = ['en', 'da']
-      blind.save!
+        blind =request.blind
+        blind.languages = ['en', 'da']
+        blind.save!
 
-      create_device_for_user helper
+        create_device_for_user helper
 
-      expect(helper.available(request).count).to eq(1)
+        expect(helper.available(request).count).to eq(1)
+      end
     end
 
     it "finds no available helpers when noone speaks blind persons languages" do
