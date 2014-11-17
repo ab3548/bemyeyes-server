@@ -4,15 +4,6 @@ class App < Sinatra::Base
   register Sinatra::Namespace
   helpers Sinatra::Jsonp
   namespace '/stats' do
-    before do
-      next unless request.post? || request.put?
-      @body_params = JSON.parse(request.body.read)
-    end
-
-    def body_params
-      @body_params
-    end
-
     get '/community' do
       return jsonp ({ 'blind' => Blind.count, 'helpers' => Helper.count, 'no_helped' =>Request.count })
     end

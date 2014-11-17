@@ -1,4 +1,17 @@
 class App < Sinatra::Base
+   before do
+      next unless request.post? || request.put?
+      begin
+       @body_params = JSON.parse(request.body.read)
+     rescue  => e
+        TheLogger.log.error "Could not parse body as JSON #{e.message}"
+     end
+    end
+
+    def body_params
+      @body_params
+    end
+
 def helper_from_token token_repr
     token = token_from_representation(token_repr)
     user = token.user

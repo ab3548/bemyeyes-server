@@ -19,7 +19,6 @@ class App < Sinatra::Base
 
     post '/report' do
       begin
-        body_params = JSON.parse(request.body.read)
         token_repr = body_params["token"]
         request_id = body_params["request_id"]
         reason = body_params["reason"]

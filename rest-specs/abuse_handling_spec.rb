@@ -43,7 +43,7 @@ describe "abuse handling" do
     request = create_request token
 
     #log user out
-    logoutUser_url  = "#{@servername_with_credentials}/users/logout"
+    logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
     RestClient.put logoutUser_url, {'token'=> token}.to_json
 
 

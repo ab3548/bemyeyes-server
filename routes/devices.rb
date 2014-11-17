@@ -9,7 +9,6 @@ class App < Sinatra::Base
     # Register device
     post '/register' do
       begin
-        body_params = JSON.parse(request.body.read)
         device_token = body_params["device_token"]
         device_name = body_params["device_name"]
         model = body_params["model"]
@@ -33,7 +32,6 @@ class App < Sinatra::Base
 
     post '/update' do
       begin
-        body_params = JSON.parse(request.body.read)
         device_token = body_params["device_token"]
         new_device_token = body_params["new_device_token"]
         device_name = body_params["device_name"]

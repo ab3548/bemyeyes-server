@@ -73,7 +73,7 @@ shared_context "rest-context" do
 
   def log_user_in email = @email, password = @password, device_token = 'device_token'
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     response = RestClient.post loginUser_url, {'email' => email, 'password'=> password, 'device_token' => device_token}.to_json
     jsn = JSON.parse(response.to_s)
     token = jsn["token"]["token"]

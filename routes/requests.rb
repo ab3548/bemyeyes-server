@@ -6,16 +6,6 @@ class App < Sinatra::Base
 
   # Begin requests namespace
   namespace '/requests' do
-
-    before do
-      next unless request.post? || request.put?
-      @body_params = JSON.parse(request.body.read)
-    end
-
-    def body_params
-      @body_params
-    end
-
     # Create new request
     post '/?' do
       begin

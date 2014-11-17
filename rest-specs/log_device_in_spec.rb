@@ -21,7 +21,7 @@ describe "log device in" do
     #create user
     create_user
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     expect{RestClient.post loginUser_url,
            {'email' => @email, 'password'=> @password}.to_json}
     .to raise_error(RestClient::BadRequest)
@@ -31,7 +31,7 @@ describe "log device in" do
     create_user
     token = register_device
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     RestClient.post loginUser_url,
       {'email' => @email, 'password'=> @password, 'device_token' => 'device_token'}.to_json
 
@@ -43,7 +43,7 @@ describe "log device in" do
     create_user
     token = register_device
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     RestClient.post loginUser_url,
       {'email' => @email, 'password'=> @password, 'device_token' => 'device_token'}.to_json
 
@@ -64,13 +64,13 @@ describe "log device in" do
     create_user
     device_token = register_device
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     response = RestClient.post loginUser_url,
       {'email' => @email, 'password'=> @password, 'device_token' => device_token}.to_json
     jsn = JSON.parse(response.to_s)
     token = jsn["token"]["token"]
 
-    logoutUser_url  = "#{@servername_with_credentials}/users/logout"
+    logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
     response = RestClient.put logoutUser_url, {'token'=> token}.to_json
 
     device = Device.first(:device_token => device_token)
@@ -83,14 +83,14 @@ describe "log device in" do
     create_user
     register_device
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
     response = RestClient.post loginUser_url,
       {'email' => @email, 'password'=> @password, 'device_token' => 'device_token'}.to_json
     jsn = JSON.parse(response.to_s)
     token = jsn["token"]["token"]
 
     #log user out
-    logoutUser_url  = "#{@servername_with_credentials}/users/logout"
+    logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
     response = RestClient.put logoutUser_url, {'token'=> token}.to_json
 
     expect(Token.all(:token => token).count).to eq(0)
