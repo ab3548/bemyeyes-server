@@ -14,28 +14,20 @@ describe "Helper" do
     Request.destroy_all
   end
 
-  def create_device_for_user user
-    device = Device.new
-    device.device_token = "device_token_#{(Time.now.to_f*100000).to_s}"
-    user.devices.push(device)
-    device.save!
-  end
-
   describe "available" do
-    it "can get available helpers with lanugage" do
+    it "can get available helpers with language" do
       Timecop.freeze(Time.gm(2014,"jul",9,11,30) ) do
         request = build(:request)
 
         helper = request.helper
         helper.languages = ['ab', 'en']
         helper.first_name = "non-english"
+        helper.create_or_renew_token
         helper.save!
 
         blind =request.blind
         blind.languages = ['en', 'da']
         blind.save!
-
-        create_device_for_user helper
 
         expect(helper.available(request).count).to eq(1)
       end
