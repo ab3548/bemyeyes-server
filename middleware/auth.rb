@@ -23,7 +23,6 @@ module BME
         elsif method =~ /GET/
           #ok kinda bad convention, but if get and auth, let last part be auth_token
           auth_token = get_auth_token_from_query_string url
-          $stdout.puts "input in middleware #{auth_token}"
           load_user auth_token, env
         end
 
@@ -34,10 +33,14 @@ module BME
     end
 
     def get_param_from_rack_input env, param_name
-      input = JSON.parse env['rack.input'].read
-      JSON.parse env['rack.input'].rewind
-      $stdout.puts "input in middleware #{input}"
+      input = read_from_io_stream env, param_name
       value = input[param_name]
+    end
+
+    def read_from_io_stream env, param_name
+      input = JSON.parse env[param_name].read
+      env[param_name].rewind
+      input
     end
 
     def get_auth_token_from_query_string url
