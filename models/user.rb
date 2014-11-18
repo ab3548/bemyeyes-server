@@ -57,8 +57,8 @@ class User
   before_save :convert_times_to_utc
   after_save :user_saved
 
-  before_create :generate_auth_token
-  before_create :reset_expiry_time
+ # before_create :generate_auth_token
+  #before_create :reset_expiry_time
 
   scope :by_languages,  lambda { |languages| where(:languages => { :$in => languages }) }
 
