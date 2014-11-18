@@ -35,6 +35,7 @@ class App < Sinatra::Base
       end
       begin
         user.save!
+        user.reset_expiry_time
         user.reload
       rescue Exception => e
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
@@ -42,8 +43,6 @@ class App < Sinatra::Base
       EventBus.announce(:user_created, user_id: user.id)
       return user.to_json
     end
-
-   
 
     # Get user by id
     get '/:user_id' do
