@@ -53,9 +53,10 @@ describe "Request" do
     email = create_unique_email
     password = encrypt_password 'helperPassword'
     user_id, auth_token= create_user role, email, password
+    log_user_in email, password
     register_device auth_token, device_token, device_system_version
     
-    token = log_user_in email, password, device_token
+    token = log_user_in email, password
 
     return token, user_id
   end

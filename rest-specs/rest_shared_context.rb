@@ -71,7 +71,7 @@ shared_context "rest-context" do
     AESCrypt.encrypt(password, @security_salt)
   end
 
-  def log_user_in email = @email, password = @password, device_token = 'device_token'
+  def log_user_in email = @email, password = @password
     #log user in
     loginUser_url = "#{@servername_with_credentials}/auth/login"
     response = RestClient.post loginUser_url, {'email' => email, 'password'=> password}.to_json

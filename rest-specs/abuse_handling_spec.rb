@@ -34,15 +34,15 @@ describe "abuse handling" do
     .to raise_error(RestClient::Unauthorized)
   end
 
-  it "will not accept a abuse report if reporter is  not logged in " do
-    create_user 'blind'
-    auth_token = log_user_in
+  it "will not accept a abuse report if reporter is not logged in " do
+    id, auth_token = create_user 'blind'
+    log_user_in
     #we could add a helper and all to the request, but for this test we don't need it
     request = create_request auth_token
 
     #log user out
     logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
-    RestClient.put logoutUser_url, {'auth_token'=> auth_token + 'abc'}.to_json
+    RestClient.put logoutUser_url, {'auth_token'=> auth_token}.to_json
 
     expect{report_abuse auth_token, request.id}
     .to raise_error(RestClient::Unauthorized)

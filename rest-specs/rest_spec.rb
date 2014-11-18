@@ -47,8 +47,9 @@ describe "Rest api" do
     it "can create user,log in and log out" do
       #create user
       id, auth_token = create_user
-      register_device auth_token
       token = log_user_in
+      register_device auth_token
+      
       #log user out
       logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
       response = RestClient.put logoutUser_url, {'auth_token'=> auth_token}.to_json
@@ -60,8 +61,8 @@ describe "Rest api" do
     def change_awake_info params
 
       id, auth_token = create_user
-      register_device auth_token
       token = log_user_in
+      register_device auth_token
 
       url = "#{@servername_with_credentials}/users/info/" + auth_token
       response = RestClient.put url, params
@@ -73,8 +74,9 @@ describe "Rest api" do
 
     it "needs a valid token to change settings" do
       id, auth_token = create_user
-      register_device auth_token
       token = log_user_in
+      register_device auth_token
+     
 
       invalid_token = '123'
       url = "#{@servername_with_credentials}/users/info/"+ invalid_token

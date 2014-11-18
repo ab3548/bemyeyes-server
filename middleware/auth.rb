@@ -14,13 +14,15 @@ module BME
         $stdout.puts "url #{method} #{url}"
         if method =~ /(POST|PUT)/
           env['authenticated'] = false
-          input = JSON.parse env['rack.input'].read
-          $stdout.puts "input in middleware #{input}"
-          auth_token = input['auth_token']
+
+          auth_token = get_param_from_rack_input env, 'auth_token'
+          if auth_token.nil?
+            auth_token = get_auth_token_from_query_string url
+          end
           load_user auth_token, env
         elsif method =~ /GET/
           #ok kinda bad convention, but if get and auth, let last part be auth_token
-          auth_token = URI(url).path.split('/').last
+          auth_token = get_auth_token_from_query_string url
           $stdout.puts "input in middleware #{auth_token}"
           load_user auth_token, env
         end
@@ -29,6 +31,17 @@ module BME
         $stderr.puts "Error in BME::Auth middleware #{e.message}"
       end
       @app.call(env)
+    end
+
+    def get_param_from_rack_input env, param_name
+      input = JSON.parse env['rack.input'].read
+      $stdout.puts "input in middleware #{input}"
+      value = input[param_name]
+    end
+
+    def get_auth_token_from_query_string url
+      auth_token = URI(url).path.split('/').last
+      auth_token
     end
 
     def load_user auth_token, env

@@ -21,6 +21,7 @@ describe "device update" do
   end
   it "can update a device" do
     id, auth_token = create_user
+    log_user_in
     token = register_device auth_token
     update_device auth_token
 
@@ -30,6 +31,7 @@ describe "device update" do
   it "will not allow two devices with same device_token" do
     my_device_token = "my very special device token"
     id, auth_token = create_user
+    log_user_in
     register_device auth_token, my_device_token
     register_device auth_token, my_device_token
 
