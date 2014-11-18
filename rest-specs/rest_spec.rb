@@ -16,7 +16,7 @@ describe "Rest api" do
 
   describe "snooze" do
     it "can create user and then snooze" do
-      id = create_user
+      id, auth_token = create_user
 
       url = "#{@servername_with_credentials}/users/"+id + "/snooze/1h"
       response = RestClient.put url, {}.to_json
@@ -26,7 +26,7 @@ describe "Rest api" do
   end
   describe "create user" do
     it "can create a user and get it" do
-      id = create_user
+      id, auth_token= create_user
 
       getUser_url = "#{@servername_with_credentials}/users/" + id
       response = RestClient.get getUser_url, {:accept => :json}
