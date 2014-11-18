@@ -131,7 +131,8 @@ class User
                                              "role" => self.role,
                                              "languages" => self.languages,
                                              "snooze" => self.snooze,
-                                             "auth_token" => auth_token
+                                             "auth_token" => auth_token,
+                                             "expiry_time" => expiry_time
                                              }.to_json
                                   end
 
