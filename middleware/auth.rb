@@ -35,6 +35,7 @@ module BME
 
     def get_param_from_rack_input env, param_name
       input = JSON.parse env['rack.input'].read
+      JSON.parse env['rack.input'].rewind
       $stdout.puts "input in middleware #{input}"
       value = input[param_name]
     end

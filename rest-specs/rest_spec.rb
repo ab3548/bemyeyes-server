@@ -80,9 +80,8 @@ describe "Rest api" do
 
       invalid_token = '123'
       url = "#{@servername_with_credentials}/users/info/"+ invalid_token
-      expect{RestClient.put url, {'wake_up' =>'10:00', 'go_to_sleep' => '20:00'
-                                  }.to_json}
-      .to raise_error(RestClient::BadRequest)
+      expect{RestClient.put url, {'wake_up' =>'10:00', 'go_to_sleep' => '20:00'}.to_json}
+      .to raise_error(RestClient::Unauthorized)
     end
 
     it "can update wake up and go to sleep" do
