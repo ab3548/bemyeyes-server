@@ -41,7 +41,7 @@ class App < Sinatra::Base
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
       end
       EventBus.announce(:user_created, user_id: user.id)
-      return user.to_json
+      return user_from_id(user.id).to_json
     end
 
     # Get user by id
