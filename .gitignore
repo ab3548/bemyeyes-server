@@ -6,3 +6,4 @@ log/
 bemyeyes.sublime-project
 bemyeyes.sublime-workspace
 .vagrant/
+apache_logs/
