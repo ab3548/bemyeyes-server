@@ -33,14 +33,9 @@ module BME
     end
 
     def get_param_from_rack_input env, param_name
-      input = read_from_io_stream env, param_name
+      input = JSON.parse env['rack.input'].read
+      JSON.parse env['rack.input'].rewind
       value = input[param_name]
-    end
-
-    def read_from_io_stream env, param_name
-      input = JSON.parse env[param_name].read
-      env[param_name].rewind
-      input
     end
 
     def get_auth_token_from_query_string url
