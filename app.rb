@@ -26,6 +26,8 @@ require_relative 'helpers/ambient_request'
 require_relative 'helpers/route_methods'
 require_relative 'app_helpers/app_setup'
 require_relative 'app_helpers/setup_logger'
+require_relative 'middleware/auth'
+
 I18n.config.enforce_available_locales=false
 class App < Sinatra::Base
   register Sinatra::ConfigFile
@@ -61,6 +63,8 @@ class App < Sinatra::Base
 
     opentok_config = settings.config['opentok']
     OpenTokSDK = OpenTok::OpenTok.new opentok_config['api_key'], opentok_config['api_secret']
+
+    use BME::Auth
 
     setup_mongo
     start_cron_jobs

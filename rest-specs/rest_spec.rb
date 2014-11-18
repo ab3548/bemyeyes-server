@@ -4,7 +4,7 @@ describe "Rest api" do
   include_context "rest-context"
   describe "update user" do
     it "can update a user after creation" do
-      id = create_user
+      id, auth_token = create_user
       url = "#{@servername_with_credentials}/users/" + id
       response = RestClient.put url, {'first_name' =>'my first_name',
                                       'last_name'=>'last_name', 'email'=> @email,
@@ -46,12 +46,12 @@ describe "Rest api" do
 
     it "can create user,log in and log out" do
       #create user
-      create_user
-      register_device
+      id, auth_token = create_user
+      register_device auth_token
       token = log_user_in
       #log user out
       logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
-      response = RestClient.put logoutUser_url, {'token'=> token}.to_json
+      response = RestClient.put logoutUser_url, {'auth_token'=> auth_token}.to_json
 
       expect(response.code).to eq(200)
     end
@@ -59,11 +59,11 @@ describe "Rest api" do
   describe 'time specific behaviour' do
     def change_awake_info params
 
-      register_device
-      id = create_user
+      id, auth_token = create_user
+      register_device auth_token
       token = log_user_in
 
-      url = "#{@servername_with_credentials}/users/info/" + token
+      url = "#{@servername_with_credentials}/users/info/" + auth_token
       response = RestClient.put url, params
       expect(response.code).to eq(200)
 
@@ -72,8 +72,8 @@ describe "Rest api" do
     end
 
     it "needs a valid token to change settings" do
-      id = create_user
-      register_device
+      id, auth_token = create_user
+      register_device auth_token
       token = log_user_in
 
       invalid_token = '123'

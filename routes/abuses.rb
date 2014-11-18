@@ -8,33 +8,23 @@ class App < Sinatra::Base
       end
     end
 
-    def is_logged_in(auth_token)
-      device = Device.first(:auth_token => auth_token)
-      !device.nil? && device.is_logged_in
-    end
-    def get_reporter_role(auth_token)
-      device = Device.first(:auth_token => auth_token)
-      device.user.role
+    def get_reporter_role
+      current_user.role
     end
 
     post '/report' do
+      should_be_authenticated
       begin
-
-        auth_token = body_params["token"]
         request_id = body_params["request_id"]
         reason = body_params["reason"]
-        check_and_raise_if_blank_string auth_token, "token"
         check_and_raise_if_blank_string request_id, "request_id"
         check_and_raise_if_blank_string reason, "reason"
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      if !is_logged_in auth_token
-        give_error(401, ERROR_NOT_AUTHORIZED, "Reporter should be logged in").to_json
-      end
       begin
-        reporter = get_reporter_role auth_token
+        reporter = get_reporter_role
         request = Request.first(:id => request_id)
         
         EventBus.announce(:abuse_report_filed, request: request, reporter: reporter, reason:reason)

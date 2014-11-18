@@ -16,7 +16,6 @@ describe "Helper" do
 
   def create_device_for_user user
     device = Device.new
-    device.valid_time = 365.days
     device.device_token = "device_token_#{(Time.now.to_f*100000).to_s}"
     user.devices.push(device)
     device.save!

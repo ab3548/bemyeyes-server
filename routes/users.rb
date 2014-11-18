@@ -51,7 +51,6 @@ class App < Sinatra::Base
       return user_from_id(params[:user_id]).to_json
     end
 
-    #days param
     get '/helper_points/:user_id' do
       days = params[:days]|| 30
       helper = helper_from_id(params[:user_id])
@@ -93,14 +92,13 @@ class App < Sinatra::Base
     end
 
     put '/info/:auth_token' do
+      should_be_authenticated
       begin
-        device = device_from_auth_token(params[:auth_token])
-        user = device.user
-        user.wake_up = body_params['wake_up'] if is_24_hour_string body_params['wake_up']
-        user.go_to_sleep = body_params['go_to_sleep'] if is_24_hour_string body_params['go_to_sleep']
-        user.utc_offset = body_params['utc_offset'] unless body_params['utc_offset'].nil? or not /-?\d{1,2}/.match body_params['utc_offset']
+        current_user.wake_up = body_params['wake_up'] if is_24_hour_string body_params['wake_up']
+        current_user.go_to_sleep = body_params['go_to_sleep'] if is_24_hour_string body_params['go_to_sleep']
+        current_user.utc_offset = body_params['utc_offset'] unless body_params['utc_offset'].nil? or not /-?\d{1,2}/.match body_params['utc_offset']
 
-        user.save!
+        current_user.save!
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end

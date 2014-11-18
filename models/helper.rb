@@ -57,11 +57,11 @@ class Helper < User
       .collect(&:helper_id)
       TheLogger.log.debug "contacted_helpers #{contacted_helpers}"
 
-      logged_in_users = Device
+      logged_in_users = User
       .where(:expiry_time.gt => Time.now)
-      .fields(:user_id)
+      .fields(:_id)
       .all
-      .collect(&:user_id)
+      .collect(&:_id)
       TheLogger.log.debug "logged_in_users #{logged_in_users}"
 
       abusive_helpers = User

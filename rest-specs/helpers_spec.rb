@@ -47,21 +47,17 @@ describe "Helpers" do
   end
 
   def create_blind_ready_to_make_request
-    register_device
     create_user 'blind'
     blind_token = log_user_in
     blind_token
   end
 
   def create_helper_ready_for_call
-    device_token = 'Helper device token'
-    device_system_version ='iPhone for test'
     role ="helper"
     email = create_unique_email
     password = encrypt_password 'helperPassword'
-    register_device device_token, device_system_version
     user_id = create_user role, email, password
-    token = log_user_in email, password, device_token
+    token = log_user_in email, password
 
     return token, user_id
   end

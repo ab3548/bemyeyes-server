@@ -59,7 +59,8 @@ shared_context "rest-context" do
 
     jsn = JSON.parse response.body
     id = jsn['id']
-    return id
+    auth_token = jsn['auth_token']
+    return id, auth_token
   end
 
   def create_unique_email
@@ -73,15 +74,15 @@ shared_context "rest-context" do
   def log_user_in email = @email, password = @password, device_token = 'device_token'
     #log user in
     loginUser_url = "#{@servername_with_credentials}/auth/login"
-    response = RestClient.post loginUser_url, {'email' => email, 'password'=> password, 'device_token' => device_token}.to_json
+    response = RestClient.post loginUser_url, {'email' => email, 'password'=> password}.to_json
     jsn = JSON.parse(response.to_s)
-    token = jsn["token"]["token"]
+    token = jsn["user"]["auth_token"]
     token
   end
 
-  def register_device device_token = 'device_token', system_version = 'system_version'
+  def register_device auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
     url = "#{@servername_with_credentials}/devices/register"
-    response = RestClient.post url, {'token' =>'auth_token',
+    response = RestClient.post url, {'auth_token' =>auth_token,
                                      'device_token'=>device_token, 'device_name'=> 'device_name',
                                      'model'=> 'model', 'system_version' => system_version,
                                      'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',

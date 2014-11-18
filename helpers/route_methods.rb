@@ -1,46 +1,37 @@
 class App < Sinatra::Base
-   before do
-      next unless request.post? || request.put?
-      begin
-       @body_params = JSON.parse(request.body.read)
-     rescue  => e
-        TheLogger.log.error "Could not parse body as JSON #{e.message}"
-     end
+  before do
+    next unless request.post? || request.put?
+    begin
+      @body_params = JSON.parse(request.body.read)
+    rescue  => e
+      TheLogger.log.error "Could not parse body as JSON #{e.message}"
     end
-
-    def body_params
-      @body_params
-    end
-
-  def user_from_auth_token auth_token
-    device = device_from_auth_token(auth_token)
-    user = device.user
-    user
   end
 
-def helper_from_auth_token auth_token
-    device = device_from_auth_token(auth_token)
-    user = device.user
+  def body_params
+    @body_params
+  end
 
-    helper = Helper.first(:_id => user._id)
+  def should_be_authenticated
+    unless is_authenticated? && current_user.is_logged_in?
+      give_error(401, ERROR_NOT_AUTHORIZED, "User not authenticated, please send auth_token")
+    end
+  end
+
+  def is_authenticated?
+    env['authenticated']
+  end
+
+  def current_user
+    env["current_user"]
+  end
+
+  def current_helper
+    helper = Helper.first(:_id => current_user._id)
     helper
   end
-
-
-  def device_from_auth_token(auth_token)
-    device = Device.first(:auth_token => auth_token)
-    if device.nil?
-      give_error(400, ERROR_USER_TOKEN_NOT_FOUND, "Device not found.").to_json
-    end
-
-    if !device.valid?
-      give_error(400, ERROR_USER_TOKEN_EXPIRED, "Device login has expired.").to_json
-    end
-
-    return device
-  end
-
-   def helper_from_id(user_id)
+ 
+  def helper_from_id(user_id)
     model_from_id(user_id, Helper, ERROR_USER_NOT_FOUND, "No helper found.")
   end
 
@@ -53,7 +44,7 @@ def helper_from_auth_token auth_token
     if model.nil?
       give_error(400, code, message).to_json
     end
-    
+
     return model
   end
 end

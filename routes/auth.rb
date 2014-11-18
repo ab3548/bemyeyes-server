@@ -17,55 +17,15 @@ class App < Sinatra::Base
   namespace '/auth' do
      # Logout, thereby deleting the token
     put '/logout' do
-      begin
-        auth_token = body_params["token"]
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      device = device_from_auth_token(auth_token)
-  
-      begin
-        device.inactive =true
-        device.save!
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, e.message)
-      end
-
-      EventBus.publish(:user_logged_out, device_id:device.id) unless device.nil?
+      should_be_authenticated
+      current_user.reset_expiry_time
+      current_user.save!
+      EventBus.publish(:user_logged_out, device_id:current_user.id) unless current_user.nil?
       return { "success" => true }.to_json
     end
 
-    def get_device device_token
-      
-      if device_token.nil? or device_token.length == 0
-        device = Device.new
-        device.device_token = 'not registered yet'
-        device.inactive = true
-        device.valid_time = 365.days
-        device.save!
-        return device
-      end
-
-      device = Device.first(:device_token => device_token)
-      if device.nil?
-        raise "device not found"
-      end
-      device
-    end
     # Login, thereby creating an new token
     post '/login' do
-      begin
-        device_token = body_params["device_token"]
-        if device_token.nil?
-          raise 'device token cannot be nil'
-        end
-        device = get_device device_token
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "#{e.message}. device_token:
-          #{body_params["device_token"]}").to_json
-      end
-
       secure_password = body_params["password"]
       user_id = body_params["user_id"]
 
@@ -98,28 +58,16 @@ class App < Sinatra::Base
         end
       end
 
-      # We did log in, create auth_token
-      device.valid_time = 365.days
-      user.devices.push(device)
-
-      device.save!
-
-      EventBus.publish(:user_logged_in, device_id:device.id)
-     
-      return { "token" => JSON.parse(device.to_json), "user" => JSON.parse(device.user.to_json) }.to_json
+      user.create_or_renew_token
+      user.save!
+      return { "user" => JSON.parse(user.to_json) }.to_json
     end
 
     # Login with a token
     put '/login/token' do
-      begin
-        auth_token = body_params["token"]
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      device = device_from_auth_token(auth_token)
-
-      return { "user" => JSON.parse(device.user.to_json) }.to_json
+      current_user.create_or_renew_token
+      current_user.save!
+      return { "user" => JSON.parse(current_user.to_json) }.to_json
     end
 
     post '/request-reset-password' do
