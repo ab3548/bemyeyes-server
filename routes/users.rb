@@ -16,6 +16,10 @@ class App < Sinatra::Base
     # Create new user
     post '/?' do
       validate_body_for_create_user
+      email =  body_params["email"]
+      if User.count(:email => email) > 0
+        give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json
+      end
       user = case body_params["role"].downcase
       when "blind"
         Blind.new
@@ -40,7 +44,7 @@ class App < Sinatra::Base
         user.save(:safe => true)
         user.reload
       rescue Exception => e
-        give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
+        give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "Error creating user #{e.message}").to_json 
       end
       EventBus.announce(:user_created, user_id: user.id)
       return user.to_json
