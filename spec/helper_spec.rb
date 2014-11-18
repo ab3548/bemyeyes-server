@@ -45,7 +45,6 @@ describe "Helper" do
       blind.languages = ['en', 'da']
       blind.save!
 
-      create_device_for_user helper
 
       expect(helper.available(request).count).to eq(0)
     end
