@@ -34,10 +34,10 @@ class App < Sinatra::Base
         give_error(400, ERROR_INVALID_BODY, "Missing parameter 'user_id' for registering a Facebook user or parameter 'password' for registering a regular user.").to_json
       end
       begin
+        
+        user.save(:safe => true)
         user.reset_expiry_time
-        unless user.save(:safe => true)
-          raise 'user not saved'
-        end
+        user.save(:safe => true)
         user.reload
       rescue Exception => e
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
