@@ -23,6 +23,7 @@ class User
       "languages" => {"type" => "array"},
     }
   }
+  safe
 
   many :devices, :foreign_key => :user_id, :class_name => "Device"
   many :abuse_reports

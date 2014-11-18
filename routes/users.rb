@@ -35,7 +35,7 @@ class App < Sinatra::Base
       end
       begin
         user.reset_expiry_time
-        user.save(:safe => true)
+        user.save()
         user.reload
       rescue Exception => e
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i

@@ -53,7 +53,10 @@ class RequestsHelper
   def check_request (request, number_of_helpers)
     helper = Helper.new
     helpers = helper.available(request, number_of_helpers)
+    
     devices = helpers.collect { |u| u.devices }.flatten
+    TheLogger.log.error "////////////////////////////////////////////////////////////"
+    TheLogger.log.error "devices #{devices.inspect}"
     @notification_queue.handle_notifications devices, request  
   end
 

@@ -62,7 +62,6 @@ class App < Sinatra::Base
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
-      user = user_from_auth_token(auth_token)
       request = request_from_short_id(params[:short_id])
 
       if request.helper.nil?
@@ -70,11 +69,11 @@ class App < Sinatra::Base
       end
       if request.stopped?
         give_error(400, ERROR_REQUEST_STOPPED, "The request has been stopped.").to_json
-      elsif request.helper._id != user._id
+      elsif request.helper._id != current_user._id
         give_error(400, ERROR_NOT_PERMITTED, "This action is not permitted for the user.").to_json
       end
 
-      EventBus.announce(:request_cancelled, request_id: request.id, helper_id: user.id)
+      EventBus.announce(:request_cancelled, request_id: request.id, helper_id: current_user.id)
 
       return request.to_json
     end
