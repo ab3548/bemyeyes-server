@@ -34,7 +34,7 @@ module BME
 
     def get_param_from_rack_input env, param_name
       input = JSON.parse env['rack.input'].read
-      JSON.parse env['rack.input'].rewind
+      env['rack.input'].rewind
       value = input[param_name]
     end
 
