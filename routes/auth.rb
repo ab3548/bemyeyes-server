@@ -67,7 +67,7 @@ class App < Sinatra::Base
     put '/login/token' do
       current_user.create_or_renew_token
       current_user.save!
-      return { "user" => JSON.parse(current_user.to_json) }.to_json
+     return user.to_json
     end
 
     post '/request-reset-password' do
