@@ -17,10 +17,13 @@ class App < Sinatra::Base
   namespace '/auth' do
      # Logout, thereby deleting the token
     put '/logout' do
-      current_user.reset_expiry_time
-      current_user.save!
-      EventBus.publish(:user_logged_out, device_id:current_user.id) unless current_user.nil?
-      return { "success" => true }.to_json
+      unless current_user.nil?
+        current_user.reset_expiry_time
+        current_user.save!
+        EventBus.publish(:user_logged_out, device_id:current_user.id) unless current_user.nil?
+        return { "success" => true }.to_json
+      end
+      return { "success" => false, "reason"=> "no current_user" }.to_json
     end
 
     # Login, thereby creating an new token
