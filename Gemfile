@@ -23,6 +23,7 @@ group :development do
   gem 'rspec-mocks'
   gem 'factory_girl'
   gem 'rspec'
+  gem 'growl-rspec'
   gem 'shoulda'
   gem 'rest-client'
   gem "rack-test", require: "rack/test"

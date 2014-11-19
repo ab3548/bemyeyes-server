@@ -12,6 +12,7 @@ require 'bcrypt'
 require 'base64'
 require 'factory_girl'
 require 'uri'
+require 'growl-rspec'
 require_relative '../app'
 require_relative '../models/init'
 require_relative '../spec/integration_spec_helper'
@@ -20,6 +21,7 @@ require_relative '../spec/factories'
 I18n.config.enforce_available_locales=false
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
+  config.formatter = 'Growl::RSpec::Formatter'
 end
 
 # http://robots.thoughtbot.com/validating-json-schemas-with-an-rspec-matcher

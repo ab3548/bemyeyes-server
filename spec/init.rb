@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'mongo_mapper'
 require 'factory_girl'
+require 'growl-rspec'
 require_relative '../helpers/thelogger_module'
 require_relative './factories'
 require_relative '../models/init'
@@ -11,3 +12,6 @@ require_relative '../helpers/reset_password'
 require_relative '../helpers/waiting_requests'
 
 I18n.config.enforce_available_locales=false
+RSpec.configure do |config|
+  config.formatter = 'Growl::RSpec::Formatter'
+end
