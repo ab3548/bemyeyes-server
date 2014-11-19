@@ -36,6 +36,7 @@ module BME
       input = JSON.parse env['rack.input'].read
       env['rack.input'].rewind
       value = input[param_name]
+      value
     end
 
     def get_auth_token_from_query_string url
