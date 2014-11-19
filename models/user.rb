@@ -60,8 +60,6 @@ class User
   before_create :generate_auth_token
   before_create :reset_expiry_time
 
-  scope :by_languages,  lambda { |languages| where(:languages => { :$in => languages }) }
-
   #this is a scope
   def self.asleep_users
     now = Time.now.utc
