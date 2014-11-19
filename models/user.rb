@@ -58,7 +58,6 @@ class User
   after_save :user_saved
 
   before_create :generate_auth_token
-  before_create :reset_expiry_time
 
   #this is a scope
   def self.asleep_users

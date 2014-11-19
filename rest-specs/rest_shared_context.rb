@@ -78,7 +78,7 @@ shared_context "rest-context" do
     loginUser_url = "#{@servername_with_credentials}/auth/login"
     response = RestClient.post loginUser_url, {'email' => email, 'password'=> password}.to_json
     jsn = JSON.parse(response.to_s)
-    token = jsn["user"]["auth_token"]
+    token = jsn["auth_token"]
     token
   end
 
@@ -91,7 +91,20 @@ shared_context "rest-context" do
                                      'locale'=> 'locale', 'development' => 'true'}.to_json
     expect(response.code).to eq(200)
     json = JSON.parse(response.body)
-    json["token"]
+    json["device_token"]
+  end
+
+  def register_device_with_http_header auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
+    url = "#{@servername_with_credentials}/devices/register"
+    response = RestClient.post(url, {
+                                     'device_token'=>device_token, 'device_name'=> 'device_name',
+                                     'model'=> 'model', 'system_version' => system_version,
+                                     'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',
+                                     'locale'=> 'locale', 'development' => 'true'}.to_json,
+                                     {'X_BME_AUTH_TOKEN' => auth_token})
+    expect(response.code).to eq(200)
+    json = JSON.parse(response.body)
+    json["device_token"]
   end
 
 end

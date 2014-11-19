@@ -63,7 +63,6 @@ describe "Rest api" do
       id, auth_token = create_user
       token = log_user_in
       register_device auth_token
-
       url = "#{@servername_with_credentials}/users/info/" + auth_token
       response = RestClient.put url, params
       expect(response.code).to eq(200)

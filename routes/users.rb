@@ -39,9 +39,8 @@ class App < Sinatra::Base
       end
       begin
         
-        user.save(:safe => true)
         user.create_or_renew_token
-        user.save(:safe => true)
+        user.save()
         user.reload
       rescue Exception => e
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "Error creating user #{e.message}").to_json 

@@ -15,9 +15,15 @@ module BME
         if method =~ /(POST|PUT)/
           env['authenticated'] = false
 
-          auth_token = get_param_from_rack_input env, 'auth_token'
-          if auth_token.nil?
+          auth_token = get_auth_token_from_http_header env
+          $stdout.puts "1 #{auth_token} 2"
+          if auth_token.blank?
+            auth_token = get_param_from_rack_input env, 'auth_token'
+            $stdout.puts "3 #{auth_token} 4"
+          end
+          if auth_token.blank?
             auth_token = get_auth_token_from_query_string url
+            $stdout.puts "5 #{auth_token} 6"
           end
           load_user auth_token, env
         elsif method =~ /GET/
@@ -27,7 +33,7 @@ module BME
         end
 
       rescue => e
-        $stderr.puts "Error in BME::Auth middleware #{e.message}"
+        $stderr.puts "Error in BME::Auth middleware #{e.message} #{get_stacktrace}"
       end
       @app.call(env)
     end
@@ -42,6 +48,19 @@ module BME
     def get_auth_token_from_query_string url
       auth_token = URI(url).path.split('/').last
       auth_token
+    end
+
+    def get_auth_token_from_http_header env
+      auth_token = env['HTTP_X_BME_AUTH_TOKEN']
+      auth_token
+    end
+
+    def get_stacktrace
+      backtrace=''
+      if !$@.nil?
+        backtrace = $@.join("\n")
+      end
+      backtrace
     end
 
     def load_user auth_token, env
