@@ -40,7 +40,7 @@ class App < Sinatra::Base
       begin
         
         user.save(:safe => true)
-        user.calculate_expiry_time
+        user.create_or_renew_token
         user.save(:safe => true)
         user.reload
       rescue Exception => e
