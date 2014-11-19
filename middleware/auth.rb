@@ -16,14 +16,11 @@ module BME
           env['authenticated'] = false
 
           auth_token = get_auth_token_from_http_header env
-          $stdout.puts "1 #{auth_token} 2"
           if auth_token.blank?
             auth_token = get_param_from_rack_input env, 'auth_token'
-            $stdout.puts "3 #{auth_token} 4"
           end
           if auth_token.blank?
             auth_token = get_auth_token_from_query_string url
-            $stdout.puts "5 #{auth_token} 6"
           end
           load_user auth_token, env
         elsif method =~ /GET/
