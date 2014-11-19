@@ -60,7 +60,7 @@ class App < Sinatra::Base
 
       user.create_or_renew_token
       user.save!
-      return { "user" => JSON.parse(user.to_json) }.to_json
+      return user.to_json
     end
 
     # Login with a token
