@@ -17,7 +17,6 @@ class App < Sinatra::Base
   namespace '/auth' do
      # Logout, thereby deleting the token
     put '/logout' do
-      should_be_authenticated
       current_user.reset_expiry_time
       current_user.save!
       EventBus.publish(:user_logged_out, device_id:current_user.id) unless current_user.nil?
