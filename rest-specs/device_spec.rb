@@ -29,10 +29,10 @@ describe "device update" do
   end
 
 
-  it "can register a device sendint auth_token in http header" do
+  it "can register a device sending auth_token in http header" do
      id, auth_token = create_user
     log_user_in
-    device_token = register_device_with_http_header auth_token
+    device_token = register_device auth_token
 
     expect(Device.where(:device_token => device_token).count).to eq(1)
   end

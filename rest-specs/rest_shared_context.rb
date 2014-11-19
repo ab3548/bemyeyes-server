@@ -84,18 +84,6 @@ shared_context "rest-context" do
 
   def register_device auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
     url = "#{@servername_with_credentials}/devices/register"
-    response = RestClient.post url, {'auth_token' =>auth_token,
-                                     'device_token'=>device_token, 'device_name'=> 'device_name',
-                                     'model'=> 'model', 'system_version' => system_version,
-                                     'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',
-                                     'locale'=> 'locale', 'development' => 'true'}.to_json
-    expect(response.code).to eq(200)
-    json = JSON.parse(response.body)
-    json["device_token"]
-  end
-
-  def register_device_with_http_header auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
-    url = "#{@servername_with_credentials}/devices/register"
     response = RestClient.post(url, {
                                      'device_token'=>device_token, 'device_name'=> 'device_name',
                                      'model'=> 'model', 'system_version' => system_version,
