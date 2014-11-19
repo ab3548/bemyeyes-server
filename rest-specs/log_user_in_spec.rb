@@ -31,10 +31,10 @@ describe "log user in" do
     expect(user.is_logged_in?).to eq(true)
   end
 
-  it "create user without login, user not logged in" do
+  it "create user without login, user logged in" do
     id, auth_token = create_user
     user = User.first(:auth_token => auth_token)
-    expect(user.is_logged_in?).to eq(false)
+    expect(user.is_logged_in?).to eq(true)
   end
 
   it "can log user out with auth_token" do
