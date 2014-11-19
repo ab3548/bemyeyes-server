@@ -28,7 +28,7 @@ class App < Sinatra::Base
       unless inactive
         EventBus.publish(:device_created_or_updated, device_id:device.id)
       end
-      return { "success" => true, "token" => device_token }.to_json
+      return { "success" => true, "device_token" => device_token }.to_json
     end
   end # End namespace /devices
 
