@@ -56,7 +56,7 @@ class HelperPoint
 
     def respond_to?(meth, include_private = false)
       method_as_string = meth.to_s
-      HelperPoint.points.has_key? method_as_string || super(meth, include_private)
+      HelperPoint.points.has_key? (method_as_string) || super(meth, include_private)
     end
   end
 

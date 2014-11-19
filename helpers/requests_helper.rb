@@ -41,7 +41,7 @@ class RequestsHelper
     iphone_development_notifier.collect_feedback_on_inactive_devices
   end
 
-  def request_answered(payload)
+  def request_answered(_payload)
     answered_requests = Request.where(:answered => true).all
     answered_request_ids = answered_requests.collect{|request| request._id}.flatten
     helper_requests = HelperRequest.where(:cancel_notification_sent => false, :$or => [{:cancelled => true}, {:request_id => {:$in => answered_request_ids}}])

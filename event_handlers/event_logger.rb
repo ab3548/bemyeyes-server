@@ -2,7 +2,7 @@ require_relative '../models/event_log_object'
 
 class EventLogger
 
-  def method_missing(meth, *args, &block)
+  def method_missing(meth, *args, &_block)
     event_name = meth.to_s
     event_log = EventLog.new
     event_log.name = event_name
@@ -18,7 +18,7 @@ class EventLogger
     event_log.save!
   end
 
-  def respond_to?(meth, include_private = false)
+  def respond_to?(_meth, _include_private = false)
     true
   end
 end

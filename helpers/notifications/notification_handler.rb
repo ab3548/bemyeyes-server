@@ -17,7 +17,7 @@ class NotificationHandler
       set_cancel_notification_sent helper_requests
     end
 
-    if @successor and devices_not_handled.count > 0
+    if @successor && devices_not_handled.count > 0
       @successor.handle_cancel_contifications devices, helper_requests
     end
   end
@@ -35,7 +35,7 @@ class NotificationHandler
       set_sent_helper devices_to_handle, request
     end
 
-    if @successor and devices_not_handled.count > 0
+    if @successor && devices_not_handled.count > 0
       @successor.handle_notifications devices_not_handled, request
     end
   end

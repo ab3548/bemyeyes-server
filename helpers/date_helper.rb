@@ -16,7 +16,7 @@ class HelperPointDateHelper
     grouped_merged_days = merged_days.group_by  {|a| a.log_time.strftime "%Y-%m-%d"}
     sums = Array.new
     log_time = nil
-    grouped_merged_days.each do |id,values|
+    grouped_merged_days.each do |_id,values|
       sum = 0
 
       values.each do |x|

@@ -44,7 +44,6 @@ module ZeroPushIphoneNotifier
   def send_reset_notifications device_tokens
     initialize_zero_push
     # Create notification
-    notification_args_name = "request cancelled"
     notification = {
       :device_tokens => device_tokens,
      
@@ -59,13 +58,13 @@ module ZeroPushIphoneNotifier
   end
 
 
-  def register_device(device_token, options = {})
+  def register_device(device_token, _options = {})
     initialize_zero_push
     ZeroPush.register(device_token)
     TheLogger.log.info "Register device handled by: " + self.class.to_s
   end
 
-  def unregister_device(device_token, options = {})
+  def unregister_device(device_token, _options = {})
     initialize_zero_push
     ZeroPush.unregister(device_token)
     TheLogger.log.info "UnRegister device handled by: " + self.class.to_s
