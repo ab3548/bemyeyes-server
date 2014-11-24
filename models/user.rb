@@ -129,7 +129,8 @@ class User
                                              "languages" => self.languages,
                                              "snooze" => self.snooze,
                                              "auth_token" => auth_token,
-                                             "expiry_time" => expiry_time
+                                             "expiry_time" => expiry_time,
+                                             "facebook_user" => is_external_user
                                              }.to_json
                                   end
 
