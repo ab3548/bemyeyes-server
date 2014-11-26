@@ -67,6 +67,7 @@ class App < Sinatra::Base
 
     # Login with a token
     put '/login/token' do
+      should_be_authenticated
       current_user.create_or_renew_token
       current_user.save!
      return user.to_json
