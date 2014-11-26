@@ -1,4 +1,6 @@
+require 'logstash-logger'
 require_relative 'ambient_request'
+
 
 class BMELogger
  attr_accessor :level
@@ -12,32 +14,35 @@ class BMELogger
     @logstash_logger ||= LogStashLogger.new(type: :udp, host: 'localhost', port: 3334)
   end
 
+  def base_url
+    ambient_request = AmbientRequest.instance.request
+    unless ambient_request.nil?
+      return ambient_request.base_url
+    end
+    ""
+  end
+
   def error(message, backtrace = nil)
-    base_url = AmbientRequest.instance.request.base_url
     logstash_logger.error message:message, backtrace: backtrace, base_url:  base_url
     loggger.error message
   end
 
   def debug(message)
-    base_url = AmbientRequest.instance.request.base_url
     logstash_logger.debug message:message, base_url:  base_url
     loggger.debug message
   end
 
   def info(message)
-    base_url = AmbientRequest.instance.request.base_url
     logstash_logger.info message:message, base_url:  base_url
     loggger.info message
   end
 
   def warn(message)
-    base_url = AmbientRequest.instance.request.base_url
     logstash_logger.warn message:message, base_url:  base_url
     loggger.warn message
   end
 
   def fatal(message)
-    base_url = AmbientRequest.instance.request.base_url
     logstash_logger.fatal message:message, base_url:  base_url
     loggger.fatal message
   end
