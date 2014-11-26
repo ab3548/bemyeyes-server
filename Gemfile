@@ -20,7 +20,7 @@ gem 'logstash-logger'
 gem 'event_bus'
 gem 'sinatra-jsonp'
 gem 'zero_push'
-group :development do
+group :development, :test do
   gem 'rspec-mocks'
   gem 'factory_girl'
   gem 'rspec'
