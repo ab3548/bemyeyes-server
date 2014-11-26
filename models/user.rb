@@ -141,7 +141,6 @@ class User
                                   private
                                   def generate_auth_token()
                                     self.auth_token = SecureRandom.urlsafe_base64(64, false)
-                                    TheLogger.log.info "auth_token in generate_auth_token #{auth_token}"
                                   end
 
 
