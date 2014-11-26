@@ -19,7 +19,7 @@ class BMELogger
     unless ambient_request.nil?
       return ambient_request.base_url
     end
-    ""
+    "unit test"
   end
 
   def error(message, backtrace = nil)
