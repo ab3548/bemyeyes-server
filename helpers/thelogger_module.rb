@@ -1,3 +1,5 @@
+require_relative 'ambient_request'
+
 class BMELogger
  attr_accessor :level
  attr_accessor :formatter
@@ -11,27 +13,32 @@ class BMELogger
   end
 
   def error(message, backtrace = nil)
-    logstash_logger.error message:message, backtrace: backtrace
+    base_url = AmbientRequest.instance.request.base_url
+    logstash_logger.error message:message, backtrace: backtrace, base_url:  base_url
     loggger.error message
   end
 
   def debug(message)
-    logstash_logger.debug message:message
+    base_url = AmbientRequest.instance.request.base_url
+    logstash_logger.debug message:message, base_url:  base_url
     loggger.debug message
   end
 
   def info(message)
-    logstash_logger.info message:message
+    base_url = AmbientRequest.instance.request.base_url
+    logstash_logger.info message:message, base_url:  base_url
     loggger.info message
   end
 
   def warn(message)
-    logstash_logger.warn message:message
+    base_url = AmbientRequest.instance.request.base_url
+    logstash_logger.warn message:message, base_url:  base_url
     loggger.warn message
   end
 
   def fatal(message)
-    logstash_logger.fatal message:message
+    base_url = AmbientRequest.instance.request.base_url
+    logstash_logger.fatal message:message, base_url:  base_url
     loggger.fatal message
   end
 end

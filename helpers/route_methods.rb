@@ -3,7 +3,6 @@ class App < Sinatra::Base
     next unless request.post? || request.put?
     begin
       body_as_string = request.body.read
-      TheLogger.log.info "body_as_string #{body_as_string}"
       @body_params = JSON.parse(body_as_string)
 
     rescue  => e
