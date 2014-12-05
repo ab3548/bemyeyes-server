@@ -46,3 +46,4 @@ There is two parts to testing, in the root of the project:
 2. 'rspec rest-spec' will run tests against the rest api.  
 
 At the moment the tests are hardcoded to test against localhost:9001 which is the website exposed by the vagrant server.  
+
