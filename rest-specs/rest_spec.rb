@@ -4,7 +4,7 @@ describe "Rest api" do
   include_context "rest-context"
   describe "update user" do
     it "can update a user after creation" do
-      id = create_user
+      id, auth_token = create_user
       url = "#{@servername_with_credentials}/users/" + id
       response = RestClient.put url, {'first_name' =>'my first_name',
                                       'last_name'=>'last_name', 'email'=> @email,
@@ -16,7 +16,7 @@ describe "Rest api" do
 
   describe "snooze" do
     it "can create user and then snooze" do
-      id = create_user
+      id, auth_token = create_user
 
       url = "#{@servername_with_credentials}/users/"+id + "/snooze/1h"
       response = RestClient.put url, {}.to_json
@@ -26,7 +26,7 @@ describe "Rest api" do
   end
   describe "create user" do
     it "can create a user and get it" do
-      id = create_user
+      id, auth_token= create_user
 
       getUser_url = "#{@servername_with_credentials}/users/" + id
       response = RestClient.get getUser_url, {:accept => :json}
@@ -46,12 +46,13 @@ describe "Rest api" do
 
     it "can create user,log in and log out" do
       #create user
-      create_user
-      register_device
+      id, auth_token = create_user
       token = log_user_in
+      register_device auth_token
+      
       #log user out
-      logoutUser_url  = "#{@servername_with_credentials}/users/logout"
-      response = RestClient.put logoutUser_url, {'token'=> token}.to_json
+      logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
+      response = RestClient.put logoutUser_url, {'auth_token'=> auth_token}.to_json
 
       expect(response.code).to eq(200)
     end
@@ -59,11 +60,10 @@ describe "Rest api" do
   describe 'time specific behaviour' do
     def change_awake_info params
 
-      register_device
-      id = create_user
+      id, auth_token = create_user
       token = log_user_in
-
-      url = "#{@servername_with_credentials}/users/info/" + token
+      register_device auth_token
+      url = "#{@servername_with_credentials}/users/info/" + auth_token
       response = RestClient.put url, params
       expect(response.code).to eq(200)
 
@@ -72,15 +72,15 @@ describe "Rest api" do
     end
 
     it "needs a valid token to change settings" do
-      id = create_user
-      register_device
+      id, auth_token = create_user
       token = log_user_in
+      register_device auth_token
+     
 
       invalid_token = '123'
       url = "#{@servername_with_credentials}/users/info/"+ invalid_token
-      expect{RestClient.put url, {'wake_up' =>'10:00', 'go_to_sleep' => '20:00'
-                                  }.to_json}
-      .to raise_error(RestClient::BadRequest)
+      expect{RestClient.put url, {'wake_up' =>'10:00', 'go_to_sleep' => '20:00'}.to_json}
+      .to raise_error(RestClient::Unauthorized)
     end
 
     it "can update wake up and go to sleep" do

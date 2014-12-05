@@ -23,8 +23,8 @@ class User
       "languages" => {"type" => "array"},
     }
   }
+  safe
 
-  many :tokens, :foreign_key => :user_id, :class_name => "Token", :dependent => :destroy
   many :devices, :foreign_key => :user_id, :class_name => "Device"
   many :abuse_reports
   one :reset_password_token, :foreign_key => :reset_password_token_id, :class_name => "ResetPasswordToken"
@@ -47,6 +47,8 @@ class User
   key :go_to_sleep, String, :default => "22:00"
   key :wake_up_in_seconds_since_midnight, Integer, :default => 0
   key :go_to_sleep_in_seconds_since_midnight, Integer, :default => 0
+  key :auth_token, String, :unique => true
+  key :expiry_time, Time
 
   timestamps!
 
@@ -55,7 +57,7 @@ class User
   before_save :convert_times_to_utc
   after_save :user_saved
 
-  scope :by_languages,  lambda { |languages| where(:languages => { :$in => languages }) }
+  before_create :generate_auth_token
 
   #this is a scope
   def self.asleep_users
@@ -68,6 +70,21 @@ class User
         {:wake_up_in_seconds_since_midnight.gte => now_in_seconds_since_midnight}
     ])
   end
+
+  def is_logged_in?()
+    return Time.now < self.expiry_time
+  end
+
+  def reset_expiry_time
+   now = Time.now
+   self.expiry_time = Time.new(now.year, now.month, now.day, 0, 0, 0) - 1.days.to_i
+  end
+
+  #should be called on each login
+  def create_or_renew_token()
+    calculate_expiry_time()
+  end
+
 
   def self.authenticate_using_email(email, password)
     user = User.first(:email => { :$regex => /#{Regexp.escape(email)}/i })
@@ -110,7 +127,10 @@ class User
                                              "last_name" => self.last_name,
                                              "role" => self.role,
                                              "languages" => self.languages,
-                                             "snooze" => self.snooze
+                                             "snooze" => self.snooze,
+                                             "auth_token" => auth_token,
+                                             "expiry_time" => expiry_time,
+                                             "facebook_user" => is_external_user
                                              }.to_json
                                   end
 
@@ -119,6 +139,15 @@ class User
                                   end
 
                                   private
+                                  def generate_auth_token()
+                                    self.auth_token = SecureRandom.urlsafe_base64(64, false)
+                                  end
+
+
+                                  def calculate_expiry_time()
+                                    now = Time.now
+                                    self.expiry_time = Time.new(now.year, now.month, now.day, 0, 0, 0) + 30.days.to_i
+                                  end
 
                                   def user_saved
                                     EventBus.announce(:user_saved, user_id: _id)

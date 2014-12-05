@@ -23,9 +23,9 @@ class HelperPoint
   end
 
   @actionable_points ={
-    "share_on_twitter" => 10,
-    "share_on_facebook" => 10,
-    "watch_video" => 10
+    "share_on_twitter" => 50,
+    "share_on_facebook" => 50,
+    "watch_video" => 50
   } 
 
   @app_usage_points ={
@@ -56,7 +56,7 @@ class HelperPoint
 
     def respond_to?(meth, include_private = false)
       method_as_string = meth.to_s
-      HelperPoint.points.has_key? method_as_string || super(meth, include_private)
+      HelperPoint.points.has_key? (method_as_string) || super(meth, include_private)
     end
   end
 

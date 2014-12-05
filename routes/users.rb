@@ -3,16 +3,6 @@ class App < Sinatra::Base
 
   # Begin users namespace
   namespace '/users' do
-
-    before do
-      next unless request.post? || request.put?
-      @body_params = JSON.parse(request.body.read)
-    end
-
-    def body_params
-      @body_params
-    end
-
     def validate_body_for_create_user
       begin
         required_fields = {"required" => ["email", "first_name", "last_name", "role"]}
@@ -26,6 +16,10 @@ class App < Sinatra::Base
     # Create new user
     post '/?' do
       validate_body_for_create_user
+      email =  body_params["email"]
+      if User.count(:email => email) > 0
+        give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json
+      end
       user = case body_params["role"].downcase
       when "blind"
         Blind.new
@@ -44,120 +38,15 @@ class App < Sinatra::Base
         give_error(400, ERROR_INVALID_BODY, "Missing parameter 'user_id' for registering a Facebook user or parameter 'password' for registering a regular user.").to_json
       end
       begin
-        user.save!
+        
+        user.create_or_renew_token
+        user.save()
+        user.reload
       rescue Exception => e
-        give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json if e.message.match /email/i
+        give_error(400, ERROR_INVALID_BODY, "Error creating user #{e.message}").to_json 
       end
       EventBus.announce(:user_created, user_id: user.id)
-      return user_from_id(user._id).to_json
-    end
-
-    # Logout, thereby deleting the token
-    put '/logout' do
-      begin
-        token_repr = body_params["token"]
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      token = token_from_representation(token_repr)
-      if !token.valid?
-        give_error(400, ERROR_USER_TOKEN_EXPIRED, "Token has expired.").to_json
-      end
-      begin
-        device = token.device
-        token.delete
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, e.message)
-      end
-
-      EventBus.publish(:user_logged_out, device_id:device.id) unless device.nil?
-      return { "success" => true }.to_json
-    end
-
-    def get_device
-      device_token = body_params["device_token"]
-      if device_token.nil? or device_token.length == 0
-        raise "device_token must be present"
-      end
-
-      device = Device.first(:device_token => device_token)
-      if device.nil?
-        raise "device not found"
-      end
-      device
-    end
-    # Login, thereby creating an new token
-    post '/login' do
-      begin
-        device = get_device
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "#{e.message}. device_token:
-          #{body_params["device_token"]}").to_json
-      end
-
-      secure_password = body_params["password"]
-      user_id = body_params["user_id"]
-
-      # We need either a password or a user ID to login
-      if secure_password.nil? && user_id.nil?
-        give_error(400, ERROR_INVALID_BODY, "Missing password or user ID.").to_json
-      end
-
-      # We need an e-mail to login
-      if body_params['email'].nil?
-        give_error(400, ERROR_INVALID_BODY, "Missing e-mail.").to_json
-      end
-
-      if !secure_password.nil?
-        # Login using e-mail and password
-        password = decrypted_password(secure_password)
-        user = User.authenticate_using_email(body_params['email'], password)
-
-        # Check if we managed to log in
-        if user.nil?
-          give_error(400, ERROR_USER_INCORRECT_CREDENTIALS, "No user found matching the credentials.").to_json
-        end
-      elsif !user_id.nil?
-        # Login using user ID
-        user = User.authenticate_using_user_id(body_params['email'], body_params['user_id'])
-
-        # Check if we managed to log in
-        if user.nil?
-          give_error(400, ERROR_USER_FACEBOOK_USER_NOT_FOUND, "The Facebook user was not found.").to_json
-        end
-      end
-
-      # We did log in, create token
-      token = Token.new
-      token.valid_time = 365.days
-      user.tokens.push(token)
-      user.devices.push(device)
-
-      device.token = token
-      token.device = device
-      device.save!
-      token.save!
-
-      EventBus.publish(:user_logged_in, device_id:device.id)
-     
-      return { "token" => JSON.parse(token.to_json), "user" => JSON.parse(token.user.to_json) }.to_json
-    end
-
-    # Login with a token
-    put '/login/token' do
-      begin
-        token_repr = body_params["token"]
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      token = token_from_representation(token_repr)
-      if !token.valid?
-        give_error(400, ERROR_USER_TOKEN_EXPIRED, "Token has expired.").to_json
-      end
-
-      return { "user" => JSON.parse(token.user.to_json) }.to_json
+      return user.to_json
     end
 
     # Get user by id
@@ -167,7 +56,6 @@ class App < Sinatra::Base
       return user_from_id(params[:user_id]).to_json
     end
 
-    #days param
     get '/helper_points/:user_id' do
       days = params[:days]|| 30
       helper = helper_from_id(params[:user_id])
@@ -208,15 +96,14 @@ class App < Sinatra::Base
       !the_str.nil? and /\d\d:\d\d/.match the_str
     end
 
-    put '/info/:token_repr' do
+    put '/info/:auth_token' do
+      should_be_authenticated
       begin
-        token = token_from_representation(params[:token_repr])
-        user = token.user
-        user.wake_up = body_params['wake_up'] if is_24_hour_string body_params['wake_up']
-        user.go_to_sleep = body_params['go_to_sleep'] if is_24_hour_string body_params['go_to_sleep']
-        user.utc_offset = body_params['utc_offset'] unless body_params['utc_offset'].nil? or not /-?\d{1,2}/.match body_params['utc_offset']
+        current_user.wake_up = body_params['wake_up'] if is_24_hour_string body_params['wake_up']
+        current_user.go_to_sleep = body_params['go_to_sleep'] if is_24_hour_string body_params['go_to_sleep']
+        current_user.utc_offset = body_params['utc_offset'] unless body_params['utc_offset'].nil? or not /-?\d{1,2}/.match body_params['utc_offset']
 
-        user.save!
+        current_user.save!
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end

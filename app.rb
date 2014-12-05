@@ -11,6 +11,7 @@ require 'aescrypt'
 require 'bcrypt'
 require 'json-schema'
 require 'rufus-scheduler'
+require 'logstash-logger'
 require_relative 'helpers/requests_helper'
 require_relative 'models/init'
 require_relative 'routes/init'
@@ -26,6 +27,8 @@ require_relative 'helpers/ambient_request'
 require_relative 'helpers/route_methods'
 require_relative 'app_helpers/app_setup'
 require_relative 'app_helpers/setup_logger'
+require_relative 'middleware/auth'
+
 I18n.config.enforce_available_locales=false
 class App < Sinatra::Base
   register Sinatra::ConfigFile
@@ -62,6 +65,8 @@ class App < Sinatra::Base
     opentok_config = settings.config['opentok']
     OpenTokSDK = OpenTok::OpenTok.new opentok_config['api_key'], opentok_config['api_secret']
 
+    use BME::Auth
+
     setup_mongo
     start_cron_jobs
   end
@@ -93,7 +98,7 @@ class App < Sinatra::Base
     log_file = params[:file] || "app"
     log_file = "log/#{log_file}.log"
 
-    if !File.exists? log_file
+    if !File.exist? log_file
       log_file = "log/app.log"
     end
     File.read(log_file).gsub(/^/, '<br/>').gsub("[INFO]", "<span style='color:green'>[INFO]</span>").gsub("[ERROR]", "<span style='color:red'>[ERROR]</span>")
@@ -105,6 +110,7 @@ class App < Sinatra::Base
 
     e = env["sinatra.error"]
     TheLogger.log.error(e)
+    TheLogger.log.error(get_stacktrace)
     return { "result" => "error", "message" => e.message }.to_json
   end
 

@@ -5,18 +5,17 @@ describe "Request" do
 
   before(:each) do
     User.destroy_all
-    Token.destroy_all
     Blind.destroy_all
+    Device.destroy_all
     Request.destroy_all
   end
 
   it "can create a request" do
-    register_device
     create_user 'blind'
-    token = log_user_in
+    auth_token = log_user_in
 
     create_request_url  = "#{@servername_with_credentials}/requests"
-    response = RestClient.post create_request_url, {'token'=> token}.to_json
+    response = RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
 
     expect(response.code).to eq(200)
     jsn = JSON.parse(response.to_s)
@@ -24,28 +23,27 @@ describe "Request" do
   end
 
   it "create request and find it waiting" do
-    register_device
     create_user 'blind'
-    token = log_user_in
+    auth_token = log_user_in
 
     create_request_url  = "#{@servername_with_credentials}/requests"
-    RestClient.post create_request_url, {'token'=> token}.to_json
+    RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
 
     wr = WaitingRequests.new
     requests = wr.get_waiting_requests_from_lasts_2_minutes
     expect(requests.count).to eq(1)
   end
 
-  def create_request(token)
+  def create_request(auth_token)
     create_request_url  = "#{@servername_with_credentials}/requests"
-    response = RestClient.post create_request_url, {'token'=> token}.to_json
+    response = RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
     json = JSON.parse(response.body)
     json["short_id"]
   end
 
   def answer_request(short_id, helper_token)
     answer_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer"
-    RestClient.put answer_request_url, {'token'=> helper_token}.to_json
+    RestClient.put answer_request_url, {'auth_token'=> helper_token}.to_json
   end
 
   def create_helper_ready_for_call
@@ -54,15 +52,16 @@ describe "Request" do
     role ="helper"
     email = create_unique_email
     password = encrypt_password 'helperPassword'
-    register_device device_token, device_system_version
-    user_id = create_user role, email, password
-    token = log_user_in email, password, device_token
+    user_id, auth_token= create_user role, email, password
+    log_user_in email, password
+    register_device auth_token, device_token, device_system_version
+    
+    token = log_user_in email, password
 
     return token, user_id
   end
 
   it "can answer request and helper is added" do
-    register_device
     create_user 'blind'
     token = log_user_in
     short_id = create_request token
@@ -77,7 +76,6 @@ describe "Request" do
   end
 
   it "warns user that request is already answered" do
-    register_device
     create_user 'blind'
     token = log_user_in
     short_id = create_request token

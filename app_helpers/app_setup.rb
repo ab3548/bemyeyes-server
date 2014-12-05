@@ -23,11 +23,10 @@ class App < Sinatra::Base
         send_reset_password_mail =SendResetPasswordMail.new settings
         EventBus.subscribe(:rest_password_token_created, send_reset_password_mail, :reset_password_token_created)
 
-        unregister_device_with_urban_airship = UnRegisterDeviceWithUrbanAirship.new requests_helper
-        EventBus.subscribe(:user_logged_out, unregister_device_with_urban_airship, :user_logged_out)
+        #unregister_device_with_urban_airship = UnRegisterDeviceWithUrbanAirship.new requests_helper
+        #EventBus.subscribe(:user_logged_out, unregister_device_with_urban_airship, :user_logged_out)
 
         register_device_with_urban_airship = RegisterDeviceWithUrbanAirship.new requests_helper
-        EventBus.subscribe(:user_logged_in, register_device_with_urban_airship, :register)
         EventBus.subscribe(:device_created_or_updated, register_device_with_urban_airship, :register)
         EventBus.subscribe(:try_answer_request_but_already_answered, AssignHelperPointsOnTryAnswerAnsweredRequest.new, :answer_request)
         EventBus.subscribe(:abuse_report_filed, CreateAbuseReport.new, :abuse_report_filed)
@@ -37,7 +36,6 @@ class App < Sinatra::Base
     def self.ensure_indeces
         Helper.ensure_index(:last_help_request)
         HelperRequest.ensure_index(:request_id)
-        Token.ensure_index(:expiry_time)
         User.ensure_index([[:wake_up_in_seconds_since_midnight, 1], [:go_to_sleep_in_seconds_since_midnight, 1], [:role, 1]])
         Helper.ensure_index(:lanugages)
     end

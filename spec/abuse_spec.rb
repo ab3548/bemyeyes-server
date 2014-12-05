@@ -12,7 +12,6 @@ describe "Helper" do
     EventBus.subscribe(:abuse_report_filed, ThreeStrikesAndYouAreOut.new, :abuse_report_filed)
   end
   before(:each) do
-    Token.destroy_all
     Request.destroy_all
     User.destroy_all
   end
@@ -40,10 +39,6 @@ describe "Helper" do
     helper = build(:helper)
     helper.save
 
-    token = Token.new
-    token.user = helper
-    token.valid_time = 365.days
-    token.save!
 
     blind = build(:blind)
     blind.save
@@ -58,11 +53,6 @@ describe "Helper" do
   it "will not let a blind meet a helper from an abusive request" do
     helper = build(:helper)
     helper.save
-
-    token = Token.new
-    token.user = helper
-    token.valid_time = 365.days
-    token.save!
 
     blind = build(:blind)
     blind.save

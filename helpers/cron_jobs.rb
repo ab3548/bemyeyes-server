@@ -26,7 +26,7 @@ class CronJobs
     return @ua_feedback_job
   end
 
-   def mongo_map_reduce_job
+  def mongo_map_reduce_job
     return @mongo_map_reduce_job
   end
 

@@ -47,38 +47,35 @@ describe "Helpers" do
   end
 
   def create_blind_ready_to_make_request
-    register_device
-    create_user 'blind'
+    id, auth_token = create_user 'blind'
     blind_token = log_user_in
-    blind_token
+    auth_token
   end
 
   def create_helper_ready_for_call
-    device_token = 'Helper device token'
-    device_system_version ='iPhone for test'
     role ="helper"
     email = create_unique_email
     password = encrypt_password 'helperPassword'
-    register_device device_token, device_system_version
-    user_id = create_user role, email, password
-    token = log_user_in email, password, device_token
+    user_id, auth_token = create_user role, email, password
+    log_user_in email, password
+    register_device auth_token
 
-    return token, user_id
+    return auth_token, user_id
   end
 
-  def answer_request short_id, token
+  def answer_request short_id, auth_token
     answer_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer"
-    response = RestClient.put answer_request_url, {'token'=> token}.to_json
+    response = RestClient.put answer_request_url, {'auth_token'=> auth_token}.to_json
   end
 
-  def cancel_request short_id, token
+  def cancel_request short_id, auth_token
     cancel_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer/cancel"
-    response = RestClient.put cancel_request_url, {'token'=> token}.to_json
+    response = RestClient.put cancel_request_url, {'auth_token'=> auth_token}.to_json
   end
 
-  def create_request token
+  def create_request auth_token
     create_request_url  = "#{@servername_with_credentials}/requests"
-    response = RestClient.post create_request_url, {'token'=> token}.to_json
+    response = RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
 
     expect(response.code).to eq(200)
 

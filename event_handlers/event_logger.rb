@@ -2,7 +2,7 @@ require_relative '../models/event_log_object'
 
 class EventLogger
 
-  def method_missing(meth, *args, &block)
+  def method_missing(meth, *args, &_block)
     event_name = meth.to_s
     event_log = EventLog.new
     event_log.name = event_name
@@ -16,9 +16,14 @@ class EventLogger
       event_log.event_log_objects << event_logger_object
     end
     event_log.save!
+    logstash_logger.info message: event_name
   end
 
-  def respond_to?(meth, include_private = false)
+  def respond_to?(_meth, _include_private = false)
     true
+  end
+
+  def logstash_logger
+    @logstash_logger ||= LogStashLogger.new(type: :udp, host: 'localhost', port: 3333)
   end
 end

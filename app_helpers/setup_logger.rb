@@ -24,7 +24,7 @@ class App < Sinatra::Base
     ::Logger.class_eval { alias :write :'<<' }
     error_logger.sync = true
     TheLogger.log.level = Logger::DEBUG  # could be DEBUG, ERROR, FATAL, INFO, UNKNOWN, WARN
-    TheLogger.log.formatter = proc { |severity, datetime, progname, msg| "[#{severity}] #{datetime.strftime('%Y-%m-%d %H:%M:%S')} : #{msg}\n" }
+    TheLogger.log.formatter = proc { |severity, datetime, _progname, msg| "[#{severity}] #{datetime.strftime('%Y-%m-%d %H:%M:%S')} : #{msg}\n" }
   end
 
 

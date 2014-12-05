@@ -6,27 +6,8 @@ class App < Sinatra::Base
 
   # Begin requests namespace
   namespace '/requests' do
-
-    before do
-      next unless request.post? || request.put?
-      @body_params = JSON.parse(request.body.read)
-    end
-
-    def body_params
-      @body_params
-    end
-
     # Create new request
     post '/?' do
-      begin
-        token_repr = body_params["token"]
-        TheLogger.log.info("request post, token " + token_repr )
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      token = token_from_representation(token_repr)
-      user = token.user
 
       begin
         session = OpenTokSDK.create_session :media_mode => :relayed
@@ -41,10 +22,9 @@ class App < Sinatra::Base
       request.short_id_salt = settings.config["short_id_salt"]
       request.session_id = session_id
       request.token = token
-      request.blind = user
+      request.blind = current_user
       request.answered = false
       request.save!
-
 
       requests_helper.check_requests 1
 
@@ -60,25 +40,16 @@ class App < Sinatra::Base
 
     # Answer a request
     put '/:short_id/answer' do
-      begin
-        token_repr = body_params["token"]
-
-        TheLogger.log.info("answer request, token  " + token_repr )
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      helper = helper_from_token token_repr 
       request = request_from_short_id(params[:short_id])
 
       if request.answered?
-        EventBus.announce(:try_answer_request_but_already_answered, request_id: request.id, helper:helper)
+        EventBus.announce(:try_answer_request_but_already_answered, request_id: request.id, helper:current_helper)
         give_error(400, ERROR_REQUEST_ALREADY_ANSWERED, "The request has already been answered.").to_json
       elsif request.stopped?
-        EventBus.announce(:try_answer_request_but_already_stopped, request_id: request.id, helper:helper)
+        EventBus.announce(:try_answer_request_but_already_stopped, request_id: request.id, helper:current_helper)
         give_error(400, ERROR_REQUEST_STOPPED, "The request has been stopped.").to_json
       else
-        EventBus.announce(:request_answered, request_id: request.id, helper:helper)
+        EventBus.announce(:request_answered, request_id: request.id, helper:current_helper)
 
         return request.to_json
       end
@@ -87,12 +58,10 @@ class App < Sinatra::Base
     # A helper can cancel his own answer. This should only be done if the session has not already started.
     put '/:short_id/answer/cancel' do
       begin
-        token_repr = body_params["token"]
+        auth_token = body_params["token"]
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
-      token = token_from_representation(token_repr)
-      user = token.user
       request = request_from_short_id(params[:short_id])
 
       if request.helper.nil?
@@ -100,30 +69,22 @@ class App < Sinatra::Base
       end
       if request.stopped?
         give_error(400, ERROR_REQUEST_STOPPED, "The request has been stopped.").to_json
-      elsif request.helper._id != user._id
+      elsif request.helper._id != current_user._id
         give_error(400, ERROR_NOT_PERMITTED, "This action is not permitted for the user.").to_json
       end
 
-      EventBus.announce(:request_cancelled, request_id: request.id, helper_id: user.id)
+      EventBus.announce(:request_cancelled, request_id: request.id, helper_id: current_user.id)
 
       return request.to_json
     end
 
     # The blind or a helper can disconnect from a started session thereby stopping the session.
     put '/:short_id/disconnect' do
-      begin
-        token_repr = body_params["token"]
-      rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
-      end
-
-      token = token_from_representation(token_repr)
-      user = token.user
       request = request_from_short_id(params[:short_id])
 
       if request.stopped?
         give_error(400, ERROR_REQUEST_STOPPED, "The request has been stopped.").to_json
-      elsif request.blind._id != user._id && request.helper._id != user._id
+      elsif request.blind._id != current_user._id && request.helper._id != current_user._id
         give_error(400, ERROR_NOT_PERMITTED, "This action is not permitted for the user.").to_json
       end
 
@@ -136,20 +97,17 @@ class App < Sinatra::Base
     put '/:short_id/rate' do
       begin
         rating = body_params["rating"]
-        token_repr = body_params["token"]
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "The body is not valid.").to_json
       end
 
-      token = token_from_representation(token_repr)
-      user = token.user
       request = request_from_short_id(params[:short_id])
 
       if request.answered?
-        if user.role == "blind"
+        if current_user.role == "blind"
           request.blind_rating = rating
           request.save!
-        elsif user.role == "helper"
+        elsif current_user.role == "helper"
           request.helper_rating = rating
           request.save!
         end

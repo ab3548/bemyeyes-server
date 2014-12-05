@@ -1,6 +1,6 @@
 require 'language_list'
 class BMELanguage < Struct.new(:name, :iso_639_1)
-  end
+end
 class App < Sinatra::Base
   register Sinatra::Namespace
   namespace '/languages' do

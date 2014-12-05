@@ -3,12 +3,11 @@ require_relative './rest_shared_context'
 describe  "post event" do
   include_context "rest-context"
   it "can post event" do
-    register_device
-    user_id = create_user 'helper'
+    user_id, auth_token = create_user 'helper'
     token = log_user_in
 
     create_event_url  = "#{@servername_with_credentials}/stats/event"
-    response = RestClient.post create_event_url, {'token_repr'=> token, 'event'=> 'share_on_twitter'}.to_json
+    response = RestClient.post create_event_url, {'auth_token'=> auth_token, 'event'=> 'share_on_twitter'}.to_json
 
     expect(response.code).to eq(200)
     user = User.first(:_id => user_id)
@@ -16,16 +15,15 @@ describe  "post event" do
   end
 
   it "can only post an event once" do
-    register_device
-    user_id = create_user 'helper'
+    user_id, auth_token  = create_user 'helper'
     token = log_user_in
 
     create_event_url  = "#{@servername_with_credentials}/stats/event"
-    response = RestClient.post create_event_url, {'token_repr'=> token, 'event'=> 'share_on_twitter'}.to_json
+    response = RestClient.post create_event_url, {'auth_token'=> auth_token, 'event'=> 'share_on_twitter'}.to_json
 
     expect(response.code).to eq(200)
 
-    expect{ RestClient.post create_event_url, {'token_repr'=> token, 'event'=> 'share_on_twitter'}.to_json}
+    expect{ RestClient.post create_event_url, {'auth_token'=> auth_token, 'event'=> 'share_on_twitter'}.to_json}
     .to raise_error(RestClient::BadRequest)
   end
 end
@@ -73,7 +71,6 @@ describe 'profile endpoint' do
   def create_user_return_token
     #create user
     create_user
-    register_device
     token = log_user_in
     token
   end

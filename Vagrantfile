@@ -25,6 +25,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 80, host: 9090
   config.vm.network "forwarded_port", guest: 3000, host: 3001
   config.vm.network "forwarded_port", guest: 27017, host: 27017
+  config.vm.network "forwarded_port", guest: 3333, host: 3333, protocol: 'udp'
+  config.vm.network "forwarded_port", guest: 3334, host: 3334, protocol: 'udp'
+  config.vm.network "forwarded_port", guest: 9292, host: 9292
+  config.vm.network "forwarded_port", guest: 9200, host: 9200
+  config.vm.network "forwarded_port", guest: 9300, host: 9300
+  config.vm.network "forwarded_port", guest: 5228, host: 5228
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -43,7 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-#  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "./apache_logs", "/var/log/apache2/"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.

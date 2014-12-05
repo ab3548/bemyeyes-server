@@ -12,6 +12,7 @@ require 'bcrypt'
 require 'base64'
 require 'factory_girl'
 require 'uri'
+require 'growl-rspec'
 require_relative '../app'
 require_relative '../models/init'
 require_relative '../spec/integration_spec_helper'
@@ -20,6 +21,7 @@ require_relative '../spec/factories'
 I18n.config.enforce_available_locales=false
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
+  config.formatter = 'Growl::RSpec::Formatter'
 end
 
 # http://robots.thoughtbot.com/validating-json-schemas-with-an-rspec-matcher
@@ -49,7 +51,6 @@ shared_context "rest-context" do
     HelperRequest.destroy_all
     Request.destroy_all
     ResetPasswordToken.destroy_all
-    Token.destroy_all
   end
 
   def create_user role ="helper", email = @email, password = @password
@@ -60,7 +61,8 @@ shared_context "rest-context" do
 
     jsn = JSON.parse response.body
     id = jsn['id']
-    return id
+    auth_token = jsn['auth_token']
+    return id, auth_token
   end
 
   def create_unique_email
@@ -71,25 +73,26 @@ shared_context "rest-context" do
     AESCrypt.encrypt(password, @security_salt)
   end
 
-  def log_user_in email = @email, password = @password, device_token = 'device_token'
+  def log_user_in email = @email, password = @password
     #log user in
-    loginUser_url = "#{@servername_with_credentials}/users/login"
-    response = RestClient.post loginUser_url, {'email' => email, 'password'=> password, 'device_token' => device_token}.to_json
+    loginUser_url = "#{@servername_with_credentials}/auth/login"
+    response = RestClient.post loginUser_url, {'email' => email, 'password'=> password}.to_json
     jsn = JSON.parse(response.to_s)
-    token = jsn["token"]["token"]
+    token = jsn["auth_token"]
     token
   end
 
-  def register_device device_token = 'device_token', system_version = 'system_version'
+  def register_device auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
     url = "#{@servername_with_credentials}/devices/register"
-    response = RestClient.post url, {'token' =>'token_repr',
+    response = RestClient.post(url, {
                                      'device_token'=>device_token, 'device_name'=> 'device_name',
                                      'model'=> 'model', 'system_version' => system_version,
                                      'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',
-                                     'locale'=> 'locale', 'development' => 'true'}.to_json
+                                     'locale'=> 'locale', 'development' => 'true'}.to_json,
+                                     {'X_BME_AUTH_TOKEN' => auth_token})
     expect(response.code).to eq(200)
     json = JSON.parse(response.body)
-    json["token"]
+    json["device_token"]
   end
 
 end
