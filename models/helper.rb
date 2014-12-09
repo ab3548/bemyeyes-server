@@ -5,7 +5,7 @@ class Helper < User
   key :user_level_id, ObjectId
   belongs_to :user_level, :class_name => 'UserLevel'
   key :role, String
-  key :last_help_request, Time, :default=> Time.new(1970, 1, 1, 0, 0, 0, "+02:00") 
+  key :last_help_request, Time, :default=> Time.new(1970, 1, 1, 0, 0, 0, "+02:00")
 
   before_create :set_role
   after_create :set_points
@@ -23,7 +23,7 @@ class Helper < User
   end
 
   def set_user_level
-    self.user_level = UserLevel.first(:point_threshold.lte => points, :order => :point_threshold.desc) 
+    self.user_level = UserLevel.first(:point_threshold.lte => points, :order => :point_threshold.desc)
   end
 
   def points
