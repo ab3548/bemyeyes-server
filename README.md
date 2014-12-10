@@ -47,6 +47,6 @@ There is two parts to testing, in the root of the project:
 
 At the moment the tests are hardcoded to test against localhost:9001 which is the website exposed by the vagrant server.  
 
-Model
+##Model
 ![alt text](http://yuml.me/f0847fc8 "Model")
 
