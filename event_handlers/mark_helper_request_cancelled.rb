@@ -4,7 +4,9 @@ class MarkHelperRequestCancelled
     helper_id = payload[:helper_id]
 
     helper_request = HelperRequest.first(:request_id => request_id, :helper_id => helper_id)
-    helper_request.cancelled = true
-    helper_request.save!
+    unless helper_request.nil?
+      helper_request.cancelled = true
+      helper_request.save!
+    end
   end
 end
