@@ -113,6 +113,7 @@ class Helper < User
     .where(:user_id.nin => blocked_users)
     .where(:user_id.in => helpers_who_speaks_blind_persons_language)
     .where(:user_id.nin => helpers_in_a_call)
+    .where(:inactive => false)
     .sort(:last_help_request.desc)
     .all.sample(limit)
   end
