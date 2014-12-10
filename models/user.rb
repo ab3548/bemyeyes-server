@@ -49,6 +49,7 @@ class User
   key :go_to_sleep_in_seconds_since_midnight, Integer, :default => 0
   key :auth_token, String, :unique => true
   key :expiry_time, Time
+  key :inactive, Boolean, :default => false
 
   timestamps!
 

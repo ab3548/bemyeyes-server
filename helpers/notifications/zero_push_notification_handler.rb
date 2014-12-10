@@ -78,6 +78,7 @@ module ZeroPushIphoneNotifier
       unless device.nil?
         device.inactive = true
         device.save!
+        EventBus.publish(:device_inactive, device_id:device.id)
         TheLogger.log.info "device inactive: #{device_token}"
       end
     end
