@@ -145,7 +145,7 @@ class User
   end
 
   def create_unique_auth_token
-    auth_token = SecureRandom.urlsafe_base64(64, false)
+    auth_token = SecureRandom.uuid
     if User.where(:auth_token => auth_token).count > 0
       self.generate_auth_token
     end
