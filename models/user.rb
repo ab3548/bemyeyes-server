@@ -142,7 +142,7 @@ class User
   private
   def generate_auth_token()
     # don't generate auth_token twice
-    if self.auth_token.length > 0
+    unless self.auth_token.nil?
       return
     end
     self.auth_token = create_unique_auth_token
