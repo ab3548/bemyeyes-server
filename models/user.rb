@@ -58,7 +58,7 @@ class User
   before_save :convert_times_to_utc
   after_save :user_saved
 
-  before_create :generate_auth_token
+  before_validation :generate_auth_token
 
   #this is a scope
   def self.asleep_users
