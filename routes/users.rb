@@ -43,7 +43,7 @@ class App < Sinatra::Base
         user.save!
         user.reload
       rescue Exception => e
-        give_error(400, ERROR_INVALID_BODY, "Error creating user #{e.message} #{e.backtrace}").to_json 
+        give_error(400, ERROR_INVALID_BODY, "Error creating user #{e.message} #{user.auth_token}").to_json 
       end
       EventBus.announce(:user_created, user_id: user.id)
       return user.to_json
