@@ -74,7 +74,6 @@ module ZeroPushIphoneNotifier
     initialize_zero_push
     ZeroPush.inactive_tokens().body.each() do |feedback|
       device_token = feedback['device_token']
-      puts device_token
       device = Device.first(:device_token => device_token)
       unless device.nil?
         device.inactive = true
