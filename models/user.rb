@@ -141,7 +141,15 @@ class User
 
   private
   def generate_auth_token()
-    self.auth_token = SecureRandom.urlsafe_base64(64, false)
+    self.auth_token = create_unique_auth_token
+  end
+
+  def create_unique_auth_token
+    auth_token = SecureRandom.urlsafe_base64(64, false)
+    if User.where(:auth_token => auth_token).count > 0
+      self.generate_auth_token
+    end
+    auth_token
   end
 
 

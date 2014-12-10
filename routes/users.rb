@@ -40,7 +40,7 @@ class App < Sinatra::Base
       begin
         
         user.create_or_renew_token
-        user.save()
+        user.save!
         user.reload
       rescue Exception => e
         give_error(400, ERROR_INVALID_BODY, "Error creating user #{e.message}").to_json 
