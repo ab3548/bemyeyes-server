@@ -1,7 +1,7 @@
 class CheckForInactiveUser
   def device_changed payload
-    device_token = payload[:device_token]
-    user = Device.first(device_token: device_token).user
+    device_id = payload[:device_id]
+    user = Device.first(_id: device_id).user
 
     inactive = true
     user.devices.each do |device|
