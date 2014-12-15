@@ -3,6 +3,7 @@ class CheckForInactiveUser
     device_id = payload[:device_id]
     user = Device.first(_id: device_id).user
 
+    next if user.nil?
     inactive = true
     user.devices.each do |device|
       unless device.inactive
