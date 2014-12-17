@@ -17,7 +17,7 @@ describe WaitingRequests do
   end
 
   it "sends requests" do
-    requests = @sut.get_waiting_requests_from_lasts_2_minutes
+    requests = @sut.get_waiting_requests_from_last  2.minutes.ago
     expect(requests.count).to eq(1)
   end
 end

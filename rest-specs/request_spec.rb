@@ -30,7 +30,7 @@ describe "Request" do
     RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
 
     wr = WaitingRequests.new
-    requests = wr.get_waiting_requests_from_lasts_2_minutes
+    requests = wr.get_waiting_requests_from_last  2.minutes.ago
     expect(requests.count).to eq(1)
   end
 
