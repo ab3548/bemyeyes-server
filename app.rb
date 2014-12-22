@@ -12,6 +12,8 @@ require 'bcrypt'
 require 'json-schema'
 require 'rufus-scheduler'
 require 'logstash-logger'
+require 'redis'
+require 'logster'
 require_relative 'helpers/requests_helper'
 require_relative 'models/init'
 require_relative 'routes/init'
@@ -26,6 +28,7 @@ require_relative 'helpers/helper_point_checker'
 require_relative 'helpers/ambient_request'
 require_relative 'helpers/route_methods'
 require_relative 'app_helpers/app_setup'
+require_relative 'app_helpers/logster_setup.rb'
 require_relative 'app_helpers/setup_logger'
 require_relative 'middleware/auth'
 
@@ -54,7 +57,8 @@ class App < Sinatra::Base
   end
 
   setup_logger
-
+  use Logster::Middleware::Viewer
+  
   # Do any configurations
   configure do
     set :app_file, __FILE__
@@ -85,7 +89,7 @@ class App < Sinatra::Base
     protected!
   end
 
-  before /^(?!\/((reset-password)|(log)))\/.+$/ do
+  before /^(?!\/(reset-password))\/.+$/ do
     content_type 'application/json'
   end
 
@@ -94,15 +98,6 @@ class App < Sinatra::Base
     redirect settings.config['redirect_root']
   end
 
-  get '/log/' do
-    log_file = params[:file] || "app"
-    log_file = "log/#{log_file}.log"
-
-    if !File.exist? log_file
-      log_file = "log/app.log"
-    end
-    File.read(log_file).gsub(/^/, '<br/>').gsub("[INFO]", "<span style='color:green'>[INFO]</span>").gsub("[ERROR]", "<span style='color:red'>[ERROR]</span>")
-  end
   # Handle errors
   error do
     content_type :json

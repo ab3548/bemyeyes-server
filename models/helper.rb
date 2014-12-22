@@ -33,7 +33,7 @@ class Helper < User
   def self.helpers_who_speaks_blind_persons_language request
     raise 'no blind person in call' if request.blind.nil?
     languages_of_blind = request.blind.languages
-    TheLogger.log.info "languages_of_blind #{languages_of_blind}"
+    TheLogger.log.debug "languages_of_blind #{languages_of_blind}"
     Helper.where(:languages => {:$in => languages_of_blind})
   end
 
@@ -97,11 +97,7 @@ class Helper < User
       .collect(&:helper_id)
       TheLogger.log.debug "helpers_in_a_call #{helpers_in_a_call}"
 
-    rescue Exception => e
-      TheLogger.log.error e.message
-    end
-
-    Helper.where(
+        Helper.where(
       :id.nin => contacted_helpers,
       "$or" => [
         {:available_from => nil},
@@ -116,5 +112,8 @@ class Helper < User
     .where(:inactive => false)
     .sort(:last_help_request.desc)
     .all.sample(limit)
+    rescue Exception => e
+      TheLogger.log.error e.message
+    end
   end
 end

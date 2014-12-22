@@ -52,12 +52,16 @@ class RequestsHelper
   end
 
   def check_request (request, number_of_helpers)
-    helper = Helper.new
-    helpers = helper.available(request, number_of_helpers)
+    begin
+      helper = Helper.new
+      helpers = helper.available(request, number_of_helpers)
 
-    devices = helpers.collect { |u| u.devices }.flatten
-    TheLogger.log.info "devices #{devices.inspect}"
-    @notification_queue.handle_notifications devices, request
+      devices = helpers.collect { |u| u.devices }.flatten
+      TheLogger.log.debug "devices #{devices.inspect}"
+      @notification_queue.handle_notifications devices, request
+    rescue
+      TheLogger.log.fatal "unable to send request #{request.inspect}"
+    end
   end
 
   def check_requests(number_of_helpers)
