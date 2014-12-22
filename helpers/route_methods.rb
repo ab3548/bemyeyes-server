@@ -1,6 +1,6 @@
 class App < Sinatra::Base
   before do
-    next unless request.post? || request.put?
+    return unless request.post? || request.put?
     begin
       body_as_string = request.body.read
       @body_params = JSON.parse(body_as_string)
