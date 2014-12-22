@@ -15,7 +15,6 @@ gem 'mandrill-api'
 gem 'tzinfo'
 gem 'tzinfo-data'
 gem 'language_list'
-gem 'logstash-logger'
 
 gem 'event_bus'
 gem 'sinatra-jsonp'
