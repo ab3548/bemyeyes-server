@@ -28,7 +28,7 @@ class BMELogger
     "unit test"
   end
 
-  def error(message, backtrace = nil)
+  def error(message)
     message = message + " \nurl #{url}"
     logster_logger.error message unless logster_logger.nil?
     loggger.error message
