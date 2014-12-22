@@ -31,7 +31,7 @@ class CronJobs
   end
 
   def start_jobs
-    @job ||= @scheduler.every('5s') do
+    @job ||= @scheduler.every('1s') do
       @request_helper.check_requests 1
     end
 
