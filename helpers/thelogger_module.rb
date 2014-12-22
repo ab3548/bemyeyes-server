@@ -30,27 +30,27 @@ class BMELogger
   end
 
   def error(message, backtrace = nil)
-    logster_logger.error message
+    logster_logger.error message unless logster_logger.nil?
     loggger.error message
   end
 
   def debug(message)
-    logster_logger.debug message
+    logster_logger.debug message unless logster_logger.nil?
     loggger.debug message
   end
 
   def info(message)
-    logster_logger.info message
+    logster_logger.info message  unless logster_logger.nil?
     loggger.info message
   end
 
   def warn(message)
-    logster_logger.warn message
+    logster_logger.warn message unless logster_logger.nil?
     loggger.warn message
   end
 
   def fatal(message)
-    logster_logger.fatal message
+    logster_logger.fatal message unless logster_logger.nil?
     loggger.fatal message
   end
 end
