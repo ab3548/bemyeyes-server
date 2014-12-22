@@ -16,14 +16,9 @@ class EventLogger
       event_log.event_log_objects << event_logger_object
     end
     event_log.save!
-    logstash_logger.info message: event_name
   end
 
   def respond_to?(_meth, _include_private = false)
     true
-  end
-
-  def logstash_logger
-    @logstash_logger ||= LogStashLogger.new(type: :udp, host: 'localhost', port: 3333)
   end
 end
