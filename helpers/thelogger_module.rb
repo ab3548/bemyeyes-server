@@ -1,4 +1,3 @@
-require 'logstash-logger'
 require_relative 'ambient_request'
 
 class BMELogger
