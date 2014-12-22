@@ -17,6 +17,7 @@ class RequestsHelper
     @notification_queue = @iphone_production_notifier
   rescue => e
     TheLogger.log.error e.message
+    throw e
   end
   end
 
