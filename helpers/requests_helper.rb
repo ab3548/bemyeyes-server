@@ -7,18 +7,18 @@ class RequestsHelper
   attr_accessor :iphone_production_notifier, :iphone_development_notifier
   def initialize(zero_push_config, logger)
     begin
-    zero_push_prod_config = zero_push_config['production']['auth_key']
-    zero_push_dev_config = zero_push_config['development']['auth_key']
+      zero_push_prod_config = zero_push_config['production']['auth_key']
+      zero_push_dev_config = zero_push_config['development']['auth_key']
 
-    #setup the chain to handle notifications
-    @iphone_development_notifier = ZeroPushIphoneDevelopmentNotifier.new zero_push_dev_config, logger
-    @iphone_production_notifier = ZeroPushIphoneProductionNotifier.new zero_push_prod_config, logger
-    @iphone_production_notifier.set_successor @iphone_development_notifier
-    @notification_queue = @iphone_production_notifier
-  rescue => e
-    TheLogger.log.error e.message
-    throw e
-  end
+      #setup the chain to handle notifications
+      @iphone_development_notifier = ZeroPushIphoneDevelopmentNotifier.new zero_push_dev_config, logger
+      @iphone_production_notifier = ZeroPushIphoneProductionNotifier.new zero_push_prod_config, logger
+      @iphone_production_notifier.set_successor @iphone_development_notifier
+      @notification_queue = @iphone_production_notifier
+    rescue => e
+      TheLogger.log.error e.message
+      throw e
+    end
   end
 
   def unregister_device(development, device_token, options = {})
