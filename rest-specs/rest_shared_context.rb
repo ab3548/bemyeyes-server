@@ -39,8 +39,8 @@ shared_context "rest-context" do
     @username = config['authentication']['username']
     @password = config['authentication']['password']
     @security_salt = config["security_salt"]
-    @servername = "http://localhost:3000"
-    @servername_with_credentials = "http://#{@username}:#{@password}@localhost:3000"
+    @servername = "http://localhost:3001"
+    @servername_with_credentials = "http://#{@username}:#{@password}@localhost:3001"
     @email =  create_unique_email
     
     @password = encrypt_password('Password1')

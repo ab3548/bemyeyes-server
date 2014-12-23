@@ -24,7 +24,7 @@ describe "Helpers" do
 
   it "returns id of waiting requests" do
     blind_token = create_blind_ready_to_make_request
-    helper_token, helper_id = create_helper_ready_for_call
+    _helper_token, helper_id = create_helper_ready_for_call
 
     request_id = create_request(blind_token)
 
@@ -47,8 +47,8 @@ describe "Helpers" do
   end
 
   def create_blind_ready_to_make_request
-    id, auth_token = create_user 'blind'
-    blind_token = log_user_in
+    _id, auth_token = create_user 'blind'
+    _blind_token = log_user_in
     auth_token
   end
 
@@ -65,12 +65,12 @@ describe "Helpers" do
 
   def answer_request short_id, auth_token
     answer_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer"
-    response = RestClient.put answer_request_url, {'auth_token'=> auth_token}.to_json
+    RestClient.put answer_request_url, {'auth_token'=> auth_token}.to_json
   end
 
   def cancel_request short_id, auth_token
     cancel_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer/cancel"
-    response = RestClient.put cancel_request_url, {'auth_token'=> auth_token}.to_json
+    RestClient.put cancel_request_url, {'auth_token'=> auth_token}.to_json
   end
 
   def create_request auth_token
