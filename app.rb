@@ -30,6 +30,7 @@ require_relative 'app_helpers/app_setup'
 require_relative 'app_helpers/logster_setup.rb'
 require_relative 'app_helpers/setup_logger'
 require_relative 'middleware/auth'
+require_relative 'middleware/basic_auth'
 
 I18n.config.enforce_available_locales=false
 class App < Sinatra::Base
@@ -56,8 +57,7 @@ class App < Sinatra::Base
   end
 
   setup_logger
-  use Logster::Middleware::Viewer
-  
+
   # Do any configurations
   configure do
     set :app_file, __FILE__
@@ -69,6 +69,9 @@ class App < Sinatra::Base
     OpenTokSDK = OpenTok::OpenTok.new opentok_config['api_key'], opentok_config['api_secret']
 
     use BME::Auth
+    use BME::BasicAuth
+
+    use Logster::Middleware::Viewer
 
     setup_mongo
     start_cron_jobs

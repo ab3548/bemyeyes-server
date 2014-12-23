@@ -1,17 +1,18 @@
 require 'uri'
+require_relative 'middleware_base'
 
 module BME
-  class Auth
+  class Auth < MiddlewareBase
     def initialize(app)
       @app = app
     end
 
     def call(env)
       begin
-        $stdout.puts '--------------------------------------------------------'
+        print '--------------------------------------------------------'
         url = env['PATH_INFO']
         method = env['REQUEST_METHOD']
-        $stdout.puts "url #{method} #{url}"
+        print "url #{method} #{url}"
         if method =~ /(POST|PUT)/
           env['authenticated'] = false
 
@@ -30,7 +31,7 @@ module BME
         end
 
       rescue => e
-        $stderr.puts "Error in BME::Auth middleware #{e.message} #{get_stacktrace}"
+        warn "Error in BME::Auth middleware #{e.message} #{get_stacktrace}"
       end
       @app.call(env)
     end
@@ -52,19 +53,11 @@ module BME
       auth_token
     end
 
-    def get_stacktrace
-      backtrace=''
-      if !$@.nil?
-        backtrace = $@.join("\n")
-      end
-      backtrace
-    end
-
     def load_user auth_token, env
       unless auth_token.nil?
         user = User.first(:auth_token => auth_token)
         unless user.nil?
-          $stdout.puts "user #{user}"
+          print "user #{user}"
           env['current_user'] = user
           env['authenticated'] = true
         end
