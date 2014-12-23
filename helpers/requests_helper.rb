@@ -66,7 +66,7 @@ class RequestsHelper
 
   def check_requests(number_of_helpers)
     @waiting_requests = WaitingRequests.new
-    requests = @waiting_requests.get_waiting_requests_from_last 2.minutes.ago
+    requests = @waiting_requests.get_waiting_requests_from_last 5.seconds.ago
     requests.each { |request| check_request(request, number_of_helpers) }
   end
 end
