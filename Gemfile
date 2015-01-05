@@ -7,7 +7,7 @@ gem 'hashids'
 gem 'urbanairship'
 gem 'aescrypt'
 gem 'json-schema'
-gem 'bcrypt-ruby', :require => 'bcrypt'
+gem 'bcrypt-ruby', require: 'bcrypt'
 gem 'rufus-scheduler'
 gem "activesupport"
 gem 'bson_ext'
@@ -31,6 +31,14 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'rspec-autotest'
   gem 'timecop'
+
+  #Pry
+  gem 'pry'
+  gem 'pry-rescue'
+  gem 'pry-doc'
+  gem 'awesome_print'
+  gem 'pry-stack_explorer'
+
 end
 gem 'rake'
 

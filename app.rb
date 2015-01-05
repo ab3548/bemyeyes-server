@@ -13,6 +13,7 @@ require 'json-schema'
 require 'rufus-scheduler'
 require 'redis'
 require 'logster'
+require 'pry'
 require_relative 'helpers/requests_helper'
 require_relative 'models/init'
 require_relative 'routes/init'
@@ -72,6 +73,7 @@ class App < Sinatra::Base
     use BME::BasicAuth
 
     use Logster::Middleware::Viewer
+    use PryRescue::Rack if ENV["RACK_ENV"] == 'development'
 
     setup_mongo
     start_cron_jobs
