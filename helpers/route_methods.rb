@@ -29,7 +29,7 @@ class App < Sinatra::Base
   end
 
   def current_helper
-    helper = Helper.first(:_id => current_user._id)
+    helper = Helper.first(_id: current_user._id)
     helper
   end
  
@@ -42,7 +42,7 @@ class App < Sinatra::Base
   end
 
   def model_from_id(id, model_class, code, message)
-    model = model_class.first(:_id => id)
+    model = model_class.first(_id: id)
     if model.nil?
       give_error(400, code, message).to_json
     end

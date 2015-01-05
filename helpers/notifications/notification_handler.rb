@@ -53,7 +53,7 @@ class NotificationHandler
     TheLogger.log.error "########################################"
     TheLogger.log.error "set sent helper"
     devices.each do |device|
-      EventBus.announce(:helper_notified, :request => request, :helper => device.user )
+      EventBus.announce(:helper_notified, request: request, helper: device.user )
     end
   end
 end

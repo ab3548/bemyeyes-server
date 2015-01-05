@@ -5,7 +5,7 @@ class HelperPoint
   key :point, Integer
   key :message, String, required: true
 
-  belongs_to :user, :class_name => "User"
+  belongs_to :user, class_name: "User"
   before_create :generate_time
 
   def initialize(point, message, log_time = generate_time())

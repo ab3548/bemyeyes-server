@@ -26,28 +26,28 @@ describe "log user in" do
   it "can log a user in, auth_token assigned to user and user logged in" do
     create_user
     auth_token = log_user_in
-    user = User.first(:auth_token => auth_token)
+    user = User.first(auth_token: auth_token)
     expect(user).to_not eq(nil)
     expect(user.is_logged_in?).to eq(true)
   end
 
   it "create user without login, user logged in" do
     id, auth_token = create_user
-    user = User.first(:auth_token => auth_token)
+    user = User.first(auth_token: auth_token)
     expect(user.is_logged_in?).to eq(true)
   end
 
   it "can log user out with auth_token" do
    create_user
     auth_token = log_user_in
-    user = User.first(:auth_token => auth_token)
+    user = User.first(auth_token: auth_token)
     expect(user).to_not eq(nil)
     expect(user.is_logged_in?).to eq(true)
 
     logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
     response = RestClient.put logoutUser_url, {'auth_token'=> auth_token}.to_json
 
-    user = User.first(:auth_token => auth_token)
+    user = User.first(auth_token: auth_token)
     expect(user.is_logged_in?).to eq(false)
 
   end

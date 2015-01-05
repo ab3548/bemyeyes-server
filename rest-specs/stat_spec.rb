@@ -10,7 +10,7 @@ describe  "post event" do
     response = RestClient.post create_event_url, {'auth_token'=> auth_token, 'event'=> 'share_on_twitter'}.to_json
 
     expect(response.code).to eq(200)
-    user = User.first(:_id => user_id)
+    user = User.first(_id: user_id)
     expect(user.helper_points.count).to eq(2)
   end
 
@@ -32,7 +32,7 @@ describe 'community endpoint' do
   include_context "rest-context"
   it 'shows stats' do
     get_community_stats_url = "#{@servername_with_credentials}/stats/community"
-    response = RestClient.get get_community_stats_url, {:accept => :json}
+    response = RestClient.get get_community_stats_url, {accept: :json}
     expect(response.code).to eq(200)
 
     expect(response).to match_response_schema("stat_community")
@@ -45,14 +45,14 @@ describe 'profile endpoint' do
   it 'needs token to auth' do
     get_profile_stats_url = "#{@servername_with_credentials}/stats/profile/no_token"
 
-    expect{RestClient.get get_profile_stats_url, {:accept => :json}}
+    expect{RestClient.get get_profile_stats_url, {accept: :json}}
     .to raise_error(RestClient::BadRequest)
   end
 
   it 'returns valid json' do
     token = create_user_return_token
     get_profile_stats_url = "#{@servername_with_credentials}/stats/profile/#{token}"
-    response = RestClient.get get_profile_stats_url, {:accept => :json}
+    response = RestClient.get get_profile_stats_url, {accept: :json}
 
     expect(response.code).to eq(200)
     expect(response).to match_response_schema("stat_profile")
@@ -62,7 +62,7 @@ describe 'profile endpoint' do
     it "returns valid json" do
       token = create_user_return_token
       get_remaining_tasks_url = "#{@servername_with_credentials}/stats/actionable_tasks/#{token}"
-      response = RestClient.get get_remaining_tasks_url, {:accept => :json}
+      response = RestClient.get get_remaining_tasks_url, {accept: :json}
       expect(response.code).to eq(200)
       expect(response).to match_response_schema("remaining_tasks")
     end

@@ -17,7 +17,7 @@ class App < Sinatra::Base
     post '/?' do
       validate_body_for_create_user
       email =  body_params["email"]
-      if User.count(:email => email) > 0
+      if User.count(email: email) > 0
         give_error(400, ERROR_USER_EMAIL_ALREADY_REGISTERED, "The e-mail is already registered.").to_json
       end
       user = case body_params["role"].downcase
@@ -130,7 +130,7 @@ class App < Sinatra::Base
         when 'stop'
           current_time
       end
-      user.update_attributes!({:snooze_period => params[:period], :available_from => new_time})
+      user.update_attributes!({snooze_period: params[:period], available_from: new_time})
       return user.to_json
     end
   end # End namespace /users

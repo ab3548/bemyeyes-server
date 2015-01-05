@@ -11,7 +11,7 @@ class App < Sinatra::Base
   end
 
   def user
-    @user ||= User.first({:email => @email}) || give_error(400, ERROR_USER_NOT_FOUND, "User Not found")
+    @user ||= User.first({email: @email}) || give_error(400, ERROR_USER_NOT_FOUND, "User Not found")
   end
 
   namespace '/auth' do

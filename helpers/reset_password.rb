@@ -3,7 +3,7 @@ class ResetPasswordService
     @logger = logger
   end
   def reset_password token, password
-    token = ResetPasswordToken.first({:token => token})
+    token = ResetPasswordToken.first({token: token})
     if token.nil?
       return false, "User not found"
     end

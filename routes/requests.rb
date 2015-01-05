@@ -10,7 +10,7 @@ class App < Sinatra::Base
     post '/?' do
 
       begin
-        session = OpenTokSDK.create_session :media_mode => :relayed
+        session = OpenTokSDK.create_session media_mode: :relayed
         session_id = session.session_id
         token = OpenTokSDK.generate_token session_id
       rescue Exception => e
@@ -123,7 +123,7 @@ class App < Sinatra::Base
 
   # Find a request from a short ID
   def request_from_short_id(short_id)
-    request = Request.first(:short_id => short_id)
+    request = Request.first(short_id: short_id)
     if request.nil?
       give_error(400, ERROR_REQUEST_NOT_FOUND, "Request not found.").to_json
     end

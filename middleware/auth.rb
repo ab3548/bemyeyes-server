@@ -55,7 +55,7 @@ module BME
 
     def load_user auth_token, env
       unless auth_token.nil?
-        user = User.first(:auth_token => auth_token)
+        user = User.first(auth_token: auth_token)
         unless user.nil?
           print "user #{user}"
           env['current_user'] = user

@@ -53,7 +53,7 @@ describe "abuse handling" do
     auth_token = log_user_in
 
     helper_user_id = create_user 'helper', 'helper@example.com'
-    helper = User.first(:_id => helper_user_id)
+    helper = User.first(_id: helper_user_id)
 
     request = create_request auth_token, helper
     report_abuse auth_token, request.id

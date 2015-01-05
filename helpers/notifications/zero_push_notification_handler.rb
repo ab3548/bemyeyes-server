@@ -22,15 +22,15 @@ module ZeroPushIphoneNotifier
     user = request.blind
     notification_args_name = user.to_s
     notification = {
-      :device_tokens => device_tokens,
-        :alert => {
+      device_tokens: device_tokens,
+        alert: {
           :"loc-key" => "PUSH_NOTIFICATION_ANSWER_REQUEST_MESSAGE",
           :"loc-args" => [ notification_args_name ],
           :"action-loc-key" => "PUSH_NOTIFICATION_ANSWER_REQUEST_ACTION",
-          :short_id => request.short_id,
+          short_id: request.short_id,
         }, 
-        :sound => "call.aiff",
-        :badge => 1,
+        sound: "call.aiff",
+        badge: 1,
     }
     # Send notification
     ZeroPush.notify(notification)
@@ -45,9 +45,9 @@ module ZeroPushIphoneNotifier
     initialize_zero_push
     # Create notification
     notification = {
-      :device_tokens => device_tokens,
+      device_tokens: device_tokens,
      
-        :badge => 0,
+        badge: 0,
     }
     # Send notification
     ZeroPush.notify(notification)
@@ -74,7 +74,7 @@ module ZeroPushIphoneNotifier
     initialize_zero_push
     ZeroPush.inactive_tokens().body.each() do |feedback|
       device_token = feedback['device_token']
-      device = Device.first(:device_token => device_token)
+      device = Device.first(device_token: device_token)
       unless device.nil?
         device.inactive = true
         device.save!

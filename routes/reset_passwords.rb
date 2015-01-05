@@ -7,7 +7,7 @@ class App < Sinatra::Base
   namespace '/reset-password' do
     get '/' do
       reset_password_token = params["reset_password_token"]
-      @token = ResetPasswordToken.first({:token => reset_password_token})
+      @token = ResetPasswordToken.first({token: reset_password_token})
       if @token.nil?
         @error = "You have already reset your password. <br/>If you want to reset your password again go to the app and request another password reset"
       end

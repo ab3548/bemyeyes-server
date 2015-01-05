@@ -29,7 +29,7 @@ describe "Rest api" do
       id, auth_token= create_user
 
       getUser_url = "#{@servername_with_credentials}/users/" + id
-      response = RestClient.get getUser_url, {:accept => :json}
+      response = RestClient.get getUser_url, {accept: :json}
       expect(response.code).to eq(200)
 
       jsn = JSON.parse response.body
@@ -67,7 +67,7 @@ describe "Rest api" do
       response = RestClient.put url, params
       expect(response.code).to eq(200)
 
-      user = User.first(:_id => id)
+      user = User.first(_id: id)
       user
     end
 

@@ -10,7 +10,7 @@ class App < Sinatra::Base
 
     get '/profile/:auth_token' do
        begin
-      no_helped = Request.count(:helper_id => current_helper._id, :answered => true)
+      no_helped = Request.count(helper_id: current_helper._id, answered: true)
       total_points = current_helper.points
       events = get_point_events current_helper
       current_level =  user_level_to_BMELevel current_helper.user_level
@@ -41,7 +41,7 @@ class App < Sinatra::Base
        rescue => error
         give_error(400, ERROR_INVALID_BODY, "Error").to_json
       end
-      {:status => "OK"}.to_json
+      {status: "OK"}.to_json
     end
 
     get '/actionable_tasks/:auth_token' do

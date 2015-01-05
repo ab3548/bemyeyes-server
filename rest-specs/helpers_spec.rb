@@ -28,7 +28,7 @@ describe "Helpers" do
 
     request_id = create_request(blind_token)
 
-    expect(HelperRequest.count(:helper_id => helper_id)).to eq(1)
+    expect(HelperRequest.count(helper_id: helper_id)).to eq(1)
 
     waiting_request_id = get_waiting_request_id helper_id
 

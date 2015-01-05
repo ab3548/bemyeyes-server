@@ -14,11 +14,11 @@ describe "helper points" do
     id = jsn['id']
 
     url = "#{@servername_with_credentials}/users/helper_points/" + id
-    response = RestClient.get url, {:accept => :json}
+    response = RestClient.get url, {accept: :json}
     expect(response.code).to eq(200)
 
     url = "#{@servername_with_credentials}/users/helper_points_sum/" + id
-    response = RestClient.get url, {:accept => :json}
+    response = RestClient.get url, {accept: :json}
     expect(response.code).to eq(200)
 
     jsn = JSON.parse response.body

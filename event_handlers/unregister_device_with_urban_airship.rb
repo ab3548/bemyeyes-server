@@ -5,7 +5,7 @@ class UnRegisterDeviceWithUrbanAirship
 
   def user_logged_out(payload)
     device_id = payload[:device_id]
-    device = Device.first(:_id => device_id)
+    device = Device.first(_id: device_id)
 
     return if device.nil?
 

@@ -5,7 +5,7 @@ require './lib/create_user_levels.rb'
 
 RSpec::Core::RakeTask.new(:spec)
 
-task :default => :spec
+task default: :spec
 
 task :create_yuml_output do
   Uml.create_yuml_output

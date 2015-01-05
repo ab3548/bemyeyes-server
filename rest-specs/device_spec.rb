@@ -25,7 +25,7 @@ describe "device update" do
     device_token = register_device auth_token
     update_device auth_token
 
-    expect(Device.where(:model => UPDATEDMODEL).count).to eq(1)
+    expect(Device.where(model: UPDATEDMODEL).count).to eq(1)
   end
 
 
@@ -34,7 +34,7 @@ describe "device update" do
     log_user_in
     device_token = register_device auth_token
 
-    expect(Device.where(:device_token => device_token).count).to eq(1)
+    expect(Device.where(device_token: device_token).count).to eq(1)
   end
 
   it "will not allow two devices with same device_token" do
@@ -44,6 +44,6 @@ describe "device update" do
     register_device auth_token, my_device_token
     register_device auth_token, my_device_token
 
-    expect(Device.where(:device_token => my_device_token).count).to eq(1)
+    expect(Device.where(device_token: my_device_token).count).to eq(1)
   end
 end

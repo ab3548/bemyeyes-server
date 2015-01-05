@@ -3,8 +3,8 @@ require 'securerandom'
 class ResetPasswordToken
   include MongoMapper::Document
 
-  belongs_to :user, :class_name => "User"
-  key :token, String, :unique => true
+  belongs_to :user, class_name: "User"
+  key :token, String, unique: true
   timestamps!
 
   before_save :create_unique_id

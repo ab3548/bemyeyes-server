@@ -25,7 +25,7 @@ class App < Sinatra::Base
 
       begin
         reporter = get_reporter_role
-        request = Request.first(:id => request_id)
+        request = Request.first(id: request_id)
         
         EventBus.announce(:abuse_report_filed, request: request, reporter: reporter, reason:reason)
       rescue Exception => e

@@ -17,7 +17,7 @@ class Uml
         end
 
         if line.strip.start_with?('many') || line.strip.start_with?('one')
-          if match = line.match(/.*:class_name => "(\w+)"/)
+          if match = line.match(/.*class_name: "(\w+)"/)
             to_klass = match.captures[0]
           end
 
