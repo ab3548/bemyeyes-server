@@ -26,7 +26,7 @@ class NotificationHandler
     active_devices = devices.reject {|device| device.inactive}
     devices_not_handled = active_devices.reject {|device| include_device? device}
     devices_to_handle = active_devices.select {|device| include_device? device}
-    
+
     if devices_to_handle.count > 0
 
       device_tokens = devices_to_handle.collect { |d| d.device_token }
