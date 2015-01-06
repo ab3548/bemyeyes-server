@@ -47,9 +47,8 @@ describe "Helpers" do
   end
 
   def create_blind_ready_to_make_request
-    _id, auth_token = create_user 'blind'
-    _blind_token = log_user_in
-    auth_token
+    create_user 'blind'
+    log_user_in
   end
 
   def create_helper_ready_for_call
