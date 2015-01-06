@@ -84,6 +84,6 @@ end
   end
 
   def get_point_events helper
-    helper.helper_points.sort(:created_at.asc).collect{|point| BMEPointEvent.new(point.message,  point.log_time, point.point)}
+    helper.helper_points.sort(:created_at.desc).collect{|point| BMEPointEvent.new(point.message,  point.log_time, point.point)}
   end
 end
