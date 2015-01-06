@@ -58,7 +58,7 @@ describe "Helpers" do
     password = encrypt_password 'helperPassword'
     user_id, auth_token = create_user role, email, password
     log_user_in email, password
-    register_device auth_token
+    register_device auth_token, 'device_token', 'iPhone'
 
     return auth_token, user_id
   end
