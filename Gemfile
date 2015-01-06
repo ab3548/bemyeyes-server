@@ -38,7 +38,7 @@ group :development, :test do
   gem 'pry-doc'
   gem 'awesome_print'
   gem 'pry-stack_explorer'
-
+  gem 'pry-byebug'
 end
 gem 'rake'
 
