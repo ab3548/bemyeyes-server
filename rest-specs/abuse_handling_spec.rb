@@ -1,7 +1,7 @@
 require_relative './rest_shared_context'
 
 describe "abuse handling" do
-  def create_request(auth_token, helper = nil) 
+  def create_request_in_db(auth_token, helper = nil) 
     user = User.first(auth_token:auth_token)
     session_id = 'session_id'
     request = Request.create
@@ -38,7 +38,7 @@ describe "abuse handling" do
     id, auth_token = create_user 'blind'
     log_user_in
     #we could add a helper and all to the request, but for this test we don't need it
-    request = create_request auth_token
+    request = create_request_in_db auth_token
 
     #log user out
     logoutUser_url  = "#{@servername_with_credentials}/auth/logout"
@@ -55,7 +55,7 @@ describe "abuse handling" do
     helper_user_id = create_user 'helper', 'helper@example.com'
     helper = User.first(_id: helper_user_id)
 
-    request = create_request auth_token, helper
+    request = create_request_in_db auth_token, helper
     report_abuse auth_token, request.id
     helper.reload
 

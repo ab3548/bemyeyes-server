@@ -61,24 +61,4 @@ describe "Helpers" do
 
     return auth_token, user_id
   end
-
-  def answer_request short_id, auth_token
-    answer_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer"
-    RestClient.put answer_request_url, {'auth_token'=> auth_token}.to_json
-  end
-
-  def cancel_request short_id, auth_token
-    cancel_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer/cancel"
-    RestClient.put cancel_request_url, {'auth_token'=> auth_token}.to_json
-  end
-
-  def create_request auth_token
-    create_request_url  = "#{@servername_with_credentials}/requests"
-    response = RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
-
-    expect(response.code).to eq(200)
-
-    jsn = JSON.parse(response.to_s)
-    jsn["id"]
-  end
 end

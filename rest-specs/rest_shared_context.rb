@@ -42,7 +42,7 @@ shared_context "rest-context" do
     @servername = "http://localhost:3001"
     @servername_with_credentials = "http://#{@username}:#{@password}@localhost:3001"
     @email =  create_unique_email
-    
+
     @password = encrypt_password('Password1')
 
     User.destroy_all
@@ -65,6 +65,38 @@ shared_context "rest-context" do
     return id, auth_token
   end
 
+  def create_helper_ready_for_call
+    device_token = 'Helper device token'
+    device_system_version ='iPhone for test'
+    role ="helper"
+    email = create_unique_email
+    password = encrypt_password 'helperPassword'
+    user_id, auth_token= create_user role, email, password
+    log_user_in email, password
+    register_device auth_token, device_token, device_system_version
+
+    token = log_user_in email, password
+
+    return token, user_id
+  end
+  
+  def create_request(auth_token)
+    create_request_url  = "#{@servername_with_credentials}/requests"
+    response = RestClient.post create_request_url, {'auth_token'=> auth_token}.to_json
+    json = JSON.parse(response.body)
+    json["short_id"]
+  end
+
+  def answer_request short_id, auth_token
+    answer_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer"
+    RestClient.put answer_request_url, {'auth_token'=> auth_token}.to_json
+  end
+
+  def cancel_request short_id, auth_token
+    cancel_request_url  = "#{@servername_with_credentials}/requests/#{short_id}/answer/cancel"
+    RestClient.put cancel_request_url, {'auth_token'=> auth_token}.to_json
+  end
+
   def create_unique_email
     "user_#{(Time.now.to_f*100000).to_s}@example.com"
   end
@@ -85,14 +117,13 @@ shared_context "rest-context" do
   def register_device auth_token = 'auth_token', device_token = 'device_token', system_version = 'system_version'
     url = "#{@servername_with_credentials}/devices/register"
     response = RestClient.post(url, {
-                                     'device_token'=>device_token, 'device_name'=> 'device_name',
-                                     'model'=> 'model', 'system_version' => system_version,
-                                     'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',
-                                     'locale'=> 'locale', 'development' => 'true'}.to_json,
-                                     {'X_BME_AUTH_TOKEN' => auth_token})
+      'device_token'=>device_token, 'device_name'=> 'device_name',
+      'model'=> 'model', 'system_version' => system_version,
+      'app_version' => 'app_version', 'app_bundle_version' => 'app_bundle_version',
+      'locale'=> 'locale', 'development' => 'true'}.to_json,
+      {'X_BME_AUTH_TOKEN' => auth_token})
     expect(response.code).to eq(200)
     json = JSON.parse(response.body)
     json["device_token"]
   end
-
 end
