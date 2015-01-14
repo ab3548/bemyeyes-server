@@ -17,6 +17,11 @@ db.event_logs.find().forEach(function(event_log) {
             'event_log_objects.0.json_serialized': request_id
         });
 
+        var number_of_helpers_requested = db.event_logs.count({
+             name: 'helper_notified',
+            'event_log_objects.0.json_serialized': {$regex:request_id}
+        });
+
         print('--------------------------------------------');
 
         if (answered) {
@@ -48,7 +53,10 @@ db.event_logs.find().forEach(function(event_log) {
             stopped: stopped?stopped.created_at:null,
             cancelled: cancelled?cancelled.created_at:null,
             length_in_seconds: call_length,
-            wait_length_in_seconds: wait_length
+            wait_length_in_seconds: wait_length,
+            number_of_helpers_requested: number_of_helpers_requested,
+            created_at: new Date()
+
         });
     }
 });
