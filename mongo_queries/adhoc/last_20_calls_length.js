@@ -3,7 +3,7 @@
 db.event_logs.find().forEach(function(event_log) {
     if (event_log.name === 'request_created') {
         var request_id = event_log.event_log_objects[0].json_serialized;
-
+        var request_created = event_log.created_at;
         var answered = db.event_logs.findOne({
             name: 'request_answered',
             'event_log_objects.0.json_serialized': request_id
@@ -35,17 +35,20 @@ db.event_logs.find().forEach(function(event_log) {
         }
 
         if (answered && stopped) {
-            var call_length = Math.abs(stopped.created_at - answered.created_at);
+            var call_length = Math.abs(stopped.created_at - answered.created_at)/1000;
+            var wait_length = Math.abs(request_created - answered.created_at)/1000;
             print('length');
             print(call_length / 1000);
         }
 
         db.request_logs.insert({
             request_id: request_id,
+            request_created: request_created,
             answered: answered?answered.created_at: null,
             stopped: stopped?stopped.created_at:null,
             cancelled: cancelled?cancelled.created_at:null,
-            length_in_milliseconds: call_length
+            length_in_seconds: call_length,
+            wait_length_in_seconds: wait_length
         });
     }
 });
