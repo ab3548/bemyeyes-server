@@ -21,9 +21,9 @@ function createLogForTimeSpan(startDate, endDate, weekNumber){
   var average_wait_time = sum_wait_time / count;
   var average_number_of_helpers_requested = sum_number_of_helpers_requested / count;
 
-  db.request_log_aggregation.insert({
-    count:count,
-    failed_count: failedCount,
+  db.request_log_aggregation_week.insert({
+    number_of_calls:count,
+    number_of_failed_calls: failedCount,
     average_wait_time: Math.round(average_wait_time * 100) / 100,
     average_call_length: Math.round(average_call_length * 100) / 100,
     average_number_of_helpers_requested: Math.round(average_number_of_helpers_requested * 100) / 100,
