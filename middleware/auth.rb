@@ -8,10 +8,8 @@ module BME
 
     def call(env)
       begin
-        $stdout.puts '--------------------------------------------------------'
         url = env['PATH_INFO']
         method = env['REQUEST_METHOD']
-        $stdout.puts "url #{method} #{url}"
         if method =~ /(POST|PUT)/
           env['authenticated'] = false
 
@@ -64,7 +62,6 @@ module BME
       unless auth_token.nil?
         user = User.first(:auth_token => auth_token)
         unless user.nil?
-          $stdout.puts "user #{user}"
           env['current_user'] = user
           env['authenticated'] = true
         end
