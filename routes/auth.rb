@@ -70,7 +70,7 @@ class App < Sinatra::Base
       should_be_authenticated
       current_user.create_or_renew_token
       current_user.save!
-     return user.to_json
+     return current_user.to_json
     end
 
     post '/request-reset-password' do
