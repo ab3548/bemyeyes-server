@@ -47,15 +47,21 @@ module ZeroPushIphoneNotifier
   end
 
   def send_reset_notifications device_tokens
-    initialize_zero_push
-    # Create notification
-    notification = {
-      :device_tokens => device_tokens,
-     
+    fiber = Fiber.new do
+
+      initialize_zero_push
+      # Create notification
+      notification = {
+        :device_tokens => device_tokens,
+
         :badge => 0,
-    }
-    # Send notification
-    ZeroPush.notify(notification)
+      }
+      # Send notification
+      ZeroPush.notify(notification)
+    end
+
+    fiber.resume
+
     device_tokens.each do |token|
       TheLogger.log.info("sending reset request to token device " + token)
     end
