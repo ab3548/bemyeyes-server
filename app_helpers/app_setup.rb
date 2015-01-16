@@ -36,6 +36,9 @@ class App < Sinatra::Base
     def self.ensure_indeces
         Helper.ensure_index(:last_help_request)
         HelperRequest.ensure_index(:request_id)
+        User.ensure_index(:auth_token)
+        User.ensure_index(:expiry_time)
+        User.ensure_index(:role)
         User.ensure_index([[:wake_up_in_seconds_since_midnight, 1], [:go_to_sleep_in_seconds_since_midnight, 1], [:role, 1]])
         Helper.ensure_index(:lanugages)
     end
