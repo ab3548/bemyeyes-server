@@ -34,16 +34,15 @@ class App < Sinatra::Base
   end
 
   def current_helper
-    helper = Helper.first(:_id => current_user._id)
-    helper
+   @helper ||= Helper.first(:_id => current_user._id)
   end
  
   def helper_from_id(user_id)
-    model_from_id(user_id, Helper, ERROR_USER_NOT_FOUND, "No helper found.")
+    @helper_from_id ||= model_from_id(user_id, Helper, ERROR_USER_NOT_FOUND, "No helper found.")
   end
 
   def user_from_id(user_id)
-    model_from_id(user_id, User, ERROR_USER_NOT_FOUND, "No user found.")
+    @user_from_id ||= model_from_id(user_id, User, ERROR_USER_NOT_FOUND, "No user found.")
   end
 
   def model_from_id(id, model_class, code, message)
