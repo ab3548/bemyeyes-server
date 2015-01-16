@@ -59,13 +59,9 @@ module ZeroPushIphoneNotifier
 
 
   def register_device(device_token, _options = {})
-    fiber = Fiber.new do
       initialize_zero_push
       ZeroPush.register(device_token)
       TheLogger.log.info "Register device handled by: " + self.class.to_s
-    end
-
-    fiber.resume
   end
 
   def unregister_device(device_token, _options = {})
