@@ -17,12 +17,13 @@ module ZeroPushIphoneNotifier
   end
 
   def send_notifications request, device_tokens
-    initialize_zero_push
-    # Create notification
-    user = request.blind
-    notification_args_name = user.to_s
-    notification = {
-      :device_tokens => device_tokens,
+    fiber = Fiber.new do
+      initialize_zero_push
+      # Create notification
+      user = request.blind
+      notification_args_name = user.to_s
+      notification = {
+        :device_tokens => device_tokens,
         :alert => {
           :"loc-key" => "PUSH_NOTIFICATION_ANSWER_REQUEST_MESSAGE",
           :"loc-args" => [ notification_args_name ],
@@ -31,9 +32,13 @@ module ZeroPushIphoneNotifier
         }, 
         :sound => "call.aiff",
         :badge => 1,
-    }
-    # Send notification
-    ZeroPush.notify(notification)
+      }
+      # Send notification
+      ZeroPush.notify(notification)
+    end
+
+    fiber.resume
+
     device_tokens.each do |token|
       TheLogger.log.info("sending request to token device " + token)
     end
