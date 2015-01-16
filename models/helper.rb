@@ -57,13 +57,6 @@ class Helper < User
       .collect(&:helper_id)
       TheLogger.log.debug "contacted_helpers #{contacted_helpers}"
 
-      logged_in_users = User
-      .where(:expiry_time.gt => Time.now)
-      .fields(:_id)
-      .all
-      .collect(&:_id)
-      TheLogger.log.debug "logged_in_users #{logged_in_users}"
-
       abusive_helpers = User
       .where('abuse_reports.blind_id' => request.blind_id)
       .fields(:_id)
@@ -71,14 +64,7 @@ class Helper < User
       .collect(&:_id)
       TheLogger.log.debug "abusive_helpers #{abusive_helpers}"
 
-      blocked_users = User
-      .where(:blocked => true)
-      .fields(:user_id)
-      .all
-      .collect(&:user_id)
-      TheLogger.log.debug "blocked_users #{blocked_users}"
-
-      asleep_users = User.asleep_users
+       asleep_users = User.asleep_users
       .where(:role=> 'helper')
       .fields(:user_id)
       .all
@@ -109,8 +95,8 @@ class Helper < User
     ])
     .where(:user_id.nin => asleep_users)
     .where(:id.nin => abusive_helpers)
-    .where(:id.in => logged_in_users)
-    .where(:user_id.nin => blocked_users)
+    .where(:expiry_time.gt => Time.now)
+    .where(:blocked => false)
     .where(:user_id.in => helpers_who_speaks_blind_persons_language)
     .where(:user_id.nin => helpers_in_a_call)
     .where(:inactive => false)
