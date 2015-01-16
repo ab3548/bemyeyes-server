@@ -29,14 +29,7 @@ class Helper < User
   def points
     self.helper_points.inject(0){|sum,x| sum + x.point }
   end
-
-  def self.helpers_who_speaks_blind_persons_language request
-    raise 'no blind person in call' if request.blind.nil?
-    languages_of_blind = request.blind.languages
-    TheLogger.log.info "languages_of_blind #{languages_of_blind}"
-    Helper.where(:languages => {:$in => languages_of_blind})
-  end
-
+  
   def waiting_requests
     request_ids = HelperRequest
     .where(:helper_id => _id, :cancelled => false)
@@ -71,11 +64,10 @@ class Helper < User
       .collect(&:user_id)
       TheLogger.log.debug "asleep_users #{asleep_users}"
 
-      helpers_who_speaks_blind_persons_language = Helper.helpers_who_speaks_blind_persons_language(request)
-      .fields(:user_id)
-      .all
-      .collect(&:user_id)
-      TheLogger.log.debug "helpers_who_speaks_blind_persons_language #{helpers_who_speaks_blind_persons_language}"
+      raise 'no blind person in call' if request.blind.nil?
+      languages_of_blind = request.blind.languages
+      TheLogger.log.info "languages_of_blind #{languages_of_blind}"
+      Helper.where(:languages => {:$in => languages_of_blind})
 
       helpers_in_a_call = Request.running_requests
       .fields(:helper_id)
@@ -97,7 +89,7 @@ class Helper < User
     .where(:id.nin => abusive_helpers)
     .where(:expiry_time.gt => Time.now)
     .where(:blocked => false)
-    .where(:user_id.in => helpers_who_speaks_blind_persons_language)
+    .where(:languages => {:$in => languages_of_blind})
     .where(:user_id.nin => helpers_in_a_call)
     .where(:inactive => false)
     .sort(:last_help_request.desc)
