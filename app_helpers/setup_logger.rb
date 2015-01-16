@@ -23,7 +23,7 @@ class App < Sinatra::Base
     #logging according to: http://spin.atomicobject.com/2013/11/12/production-logging-sinatra/
     ::Logger.class_eval { alias :write :'<<' }
     error_logger.sync = true
-    TheLogger.log.level = Logger::DEBUG  # could be DEBUG, ERROR, FATAL, INFO, UNKNOWN, WARN
+    TheLogger.log.level = Logger::INFO # could be DEBUG, ERROR, FATAL, INFO, UNKNOWN, WARN
     TheLogger.log.formatter = proc { |severity, datetime, _progname, msg| "[#{severity}] #{datetime.strftime('%Y-%m-%d %H:%M:%S')} : #{msg}\n" }
   end
 
