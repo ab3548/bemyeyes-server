@@ -15,7 +15,7 @@ class ThreeStrikesAndYouAreOut
       return
     end
     no_of_abuses = user.abuse_reports.count
-    if no_of_abuses == 3
+    if no_of_abuses == 1
       user.blocked = true
       user.save!
     end
