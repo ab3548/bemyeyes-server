@@ -90,8 +90,8 @@ class User
   def self.authenticate_using_email(email, password)
     user = User.first(:email => { :$regex => /#{Regexp.escape(email)}/i })
 
-    if user.is_external_user
-      TheLogger.log.info "User trying to log in with password, but is external user"
+    if user.nil? || user.is_external_user
+      TheLogger.log.info "User trying to log in with password, but is external user or nil"
       return nil
     end
 
