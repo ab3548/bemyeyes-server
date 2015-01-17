@@ -42,6 +42,8 @@ class Helper < User
   #TODO to be improved with snooze functionality
   def available request=nil, limit=5
     begin
+      raise 'no blind person in call' if request.blind.nil?
+
       request_id = request.present? ? request.id : nil
       contacted_helpers = HelperRequest
       .where(:request_id => request_id)
@@ -50,13 +52,6 @@ class Helper < User
       .collect(&:helper_id)
       TheLogger.log.debug "contacted_helpers #{contacted_helpers}"
 
-      abusive_helpers = User
-      .where('abuse_reports.blind_id' => request.blind_id)
-      .fields(:_id)
-      .all
-      .collect(&:_id)
-      TheLogger.log.debug "abusive_helpers #{abusive_helpers}"
-
        asleep_users = User.asleep_users
       .where(:role=> 'helper')
       .fields(:user_id)
@@ -64,7 +59,6 @@ class Helper < User
       .collect(&:user_id)
       TheLogger.log.debug "asleep_users #{asleep_users}"
 
-      raise 'no blind person in call' if request.blind.nil?
       languages_of_blind = request.blind.languages
       TheLogger.log.info "languages_of_blind #{languages_of_blind}"
       Helper.where(:languages => {:$in => languages_of_blind})
@@ -86,7 +80,7 @@ class Helper < User
         {:available_from.lt => Time.now.utc}
     ])
     .where(:user_id.nin => asleep_users)
-    .where(:id.nin => abusive_helpers)
+    .where('abuse_reports.blind_id' => {"$ne" =>  request.blind_id})
     .where(:expiry_time.gt => Time.now)
     .where(:blocked => false)
     .where(:languages => {:$in => languages_of_blind})
