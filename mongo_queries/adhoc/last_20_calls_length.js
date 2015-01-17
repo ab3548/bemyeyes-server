@@ -1,7 +1,6 @@
-function getLastRunTime(){
-}
+var last_run = db.request_logs.find({},{created_at:1}).sort({created_at:-1}).limit(1)[0].created_at;
 
-db.event_logs.find().forEach(function(event_log) {
+db.event_logs.find({name:'request_created',created_at:{$gte:last_run}}).forEach(function(event_log) {
     if (event_log.name === 'request_created') {
         var request_id = event_log.event_log_objects[0].json_serialized;
         var request_created = event_log.created_at;
