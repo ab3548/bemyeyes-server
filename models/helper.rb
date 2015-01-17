@@ -86,7 +86,7 @@ class Helper < User
     .where(:languages => {:$in => languages_of_blind})
     .where(:user_id.nin => helpers_in_a_call)
     .where(:inactive => false)
-    .sort(:last_help_request.desc)
+    .sort(:last_help_request.asc)
     .all.sample(limit)
   end
 end
