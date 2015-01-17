@@ -70,13 +70,21 @@ module ZeroPushIphoneNotifier
 
 
   def register_device(device_token, _options = {})
-    fiber = Fiber.new do
-      initialize_zero_push
-      ZeroPush.register(device_token)
-      TheLogger.log.info "Register device handled by: " + self.class.to_s
+    begin
+      fiber = Fiber.new do
+        initialize_zero_push
+        ZeroPush.register(device_token)
+        TheLogger.log.info "Register device handled by: " + self.class.to_s
+      end
+
+      fiber.resume
+    rescue Errno::ETIMEDOUT, Faraday::SSLError, Faraday::TimeoutError => e
+      TheLogger.log.error "unable to register device with token #{device_token} #{e}"
+      device = Device.first(:device_token => device_token)
+      device.inactive = true
+      device.save
     end
 
-    fiber.resume
   end
 
   def unregister_device(device_token, _options = {})
